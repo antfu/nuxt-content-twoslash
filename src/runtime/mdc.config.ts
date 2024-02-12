@@ -1,5 +1,4 @@
 import { defineConfig } from '@nuxtjs/mdc/config'
-import type { ShikiTransformer } from 'shiki'
 
 export default defineConfig({
   shiki: {
@@ -11,7 +10,7 @@ export default defineConfig({
         import('shiki/langs/vue.mjs'),
       )
     },
-    transformers: async (_code, _lang, _theme, options): Promise<ShikiTransformer[]> => {
+    transformers: async (_code, _lang, _theme, options) => {
       if (typeof options.meta !== 'string' || !options.meta?.match(/\btwoslash\b/))
         return []
 
@@ -22,34 +21,10 @@ export default defineConfig({
           typeDecorations,
           moduleOptions,
         } = await import('#twoslash-meta')
-
-        const prepend = [
-          '/// <reference types="./.nuxt/nuxt.d.ts" />',
-          '',
-        ].join('\n')
-
-        const { transformerTwoslash, rendererFloatingVue } = await import('@shikijs/vitepress-twoslash')
         return [
-          transformerTwoslash({
-            throws: false,
-            renderer: rendererFloatingVue({
-              floatingVue: moduleOptions.floatingVueOptions,
-            }),
-            twoslashOptions: {
-              extraFiles: moduleOptions.includeNuxtTypes
-                ? {
-                    ...typeDecorations,
-                    'index.ts': { prepend },
-                    'index.tsx': { prepend },
-                  }
-                : undefined,
-              compilerOptions: {
-                lib: ['esnext', 'dom'],
-                ...moduleOptions.compilerOptions,
-              },
-              handbookOptions: moduleOptions.handbookOptions,
-            },
-          }),
+          await import('./transformer').then(({ createTransformer }) =>
+            createTransformer(moduleOptions, typeDecorations),
+          ),
         ]
       }
       // Fallback to remove twoslash notations
