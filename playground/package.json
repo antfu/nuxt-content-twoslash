@@ -1,7 +1,7 @@
 {
-  "private": true,
-  "name": "nuxt-module-content-twoslash-playground",
+  "name": "nuxt-content-twoslash-playground",
   "type": "module",
+  "private": true,
   "scripts": {
     "dev": "nuxi dev",
     "build": "nuxi build",

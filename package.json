@@ -1,10 +1,11 @@
 {
-  "name": "nuxt-module-content-twoslash",
+  "name": "nuxt-content-twoslash",
   "type": "module",
   "version": "0.0.0",
+  "packageManager": "pnpm@8.15.1",
   "description": "Enable TwoSlash for Nuxt Content",
   "license": "MIT",
-  "repository": "antfu/nuxt-module-content-twoslash",
+  "repository": "antfu/nuxt-content-twoslash",
   "exports": {
     ".": {
       "types": "./dist/types.d.ts",

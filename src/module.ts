@@ -10,7 +10,7 @@ export interface ModuleOptions {
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
-    name: 'nuxt-module-content-twoslash',
+    name: 'nuxt-content-twoslash',
     configKey: 'twoslash',
   },
   // Default configuration options of the Nuxt module
