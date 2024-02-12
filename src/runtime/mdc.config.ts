@@ -33,9 +33,7 @@ export default defineConfig({
           transformerTwoslash({
             throws: false,
             renderer: rendererFloatingVue({
-              floatingVue: {
-                classMarkdown: 'prose prose-primary dark:prose-invert',
-              },
+              floatingVue: moduleOptions.floatingVueOptions,
             }),
             twoslashOptions: {
               extraFiles: moduleOptions.includeNuxtTypes

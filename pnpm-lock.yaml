@@ -15,11 +15,11 @@ importers:
         specifier: ^3.10.1
         version: 3.10.1(rollup@3.29.4)
       '@nuxtjs/mdc':
-        specifier: ^0.5.0
+        specifier: '>=0.5.0'
         version: 0.5.0(rollup@3.29.4)
       '@shikijs/vitepress-twoslash':
-        specifier: ^1.1.1
-        version: 1.1.1(@nuxt/kit@3.10.1)(typescript@5.3.3)
+        specifier: ^1.1.2
+        version: 1.1.2(@nuxt/kit@3.10.1)(typescript@5.3.3)
       fast-glob:
         specifier: ^3.3.2
         version: 3.3.2
@@ -1550,7 +1550,7 @@ packages:
       remark-parse: 11.0.0
       remark-rehype: 11.1.0
       scule: 1.3.0
-      shiki: 1.1.1
+      shiki: 1.1.2
       ufo: 1.4.0
       unified: 11.0.4
       unist-builder: 4.0.0
@@ -2017,31 +2017,35 @@ packages:
 
   /@shikijs/core@1.1.1:
     resolution: {integrity: sha512-WSHuW0i4W04+UZgim378oxHBAp4S5X3hVI2zXh+t5v2fx2u/7QXz9VNisoOD/CA4O9Lc6Zs97TrKiDbWyZua6Q==}
+    dev: true
+
+  /@shikijs/core@1.1.2:
+    resolution: {integrity: sha512-ERVzNQz88ZkDqUpWeC57Kp+Kmx5RjqeDBR1M8AGWGom4yrkITiTfXCGmjchlDSw12MhDTuPYR4HVFW8uT61RaQ==}
 
   /@shikijs/transformers@1.0.0:
     resolution: {integrity: sha512-US0Sc0OdH7eGL64BtfvX3XezPfqhqF5mPyBFLlbZqSpFt2/emnv9GveAWzELGsIuvXoJ6N1RjeAdmQx5Xni6BQ==}
     dependencies:
       shiki: 1.0.0
 
-  /@shikijs/twoslash@1.1.1(typescript@5.3.3):
-    resolution: {integrity: sha512-v9qhwJSeelA55+Z5e72331rvXNavqabP0jqgKNmUQkiAvEGo7upJaq/TDXcnMyC8NDqPq2fuU6xoHItzDj+Rcw==}
+  /@shikijs/twoslash@1.1.2(typescript@5.3.3):
+    resolution: {integrity: sha512-Jt8QAudENcCS7cgxjbXMpUCA7IAOy1kot+Qo5yyyLl9VwVKvZMW0BDrrigbOia8602X2Z76U6XEs9UXyD6LnsQ==}
     dependencies:
-      '@shikijs/core': 1.1.1
+      '@shikijs/core': 1.1.2
       twoslash: 0.2.1(typescript@5.3.3)
     transitivePeerDependencies:
       - supports-color
       - typescript
     dev: false
 
-  /@shikijs/vitepress-twoslash@1.1.1(@nuxt/kit@3.10.1)(typescript@5.3.3):
-    resolution: {integrity: sha512-V4LY5FUH5sj0GaVFxaHx7Wbv/e/Bk/ejw3IuMZMpMKXQTh3xiGvbprhp05DleHdZ0J6OtMBjJw6aL42s6Zgbew==}
+  /@shikijs/vitepress-twoslash@1.1.2(@nuxt/kit@3.10.1)(typescript@5.3.3):
+    resolution: {integrity: sha512-p/slT8bt7dpCkSy00I3sqD5P9Dbqu3fU4oawIaqThbET8MKpM7atvOyZHwi8yY3jOw3Yul4unyYFXd4RebW1BQ==}
     dependencies:
-      '@shikijs/twoslash': 1.1.1(typescript@5.3.3)
+      '@shikijs/twoslash': 1.1.2(typescript@5.3.3)
       floating-vue: 5.2.2(@nuxt/kit@3.10.1)(vue@3.4.18)
       mdast-util-from-markdown: 2.0.0
       mdast-util-gfm: 3.0.0
       mdast-util-to-hast: 13.1.0
-      shiki: 1.1.1
+      shiki: 1.1.2
       twoslash: 0.2.1(typescript@5.3.3)
       twoslash-vue: 0.2.1(typescript@5.3.3)
       vue: 3.4.18(typescript@5.3.3)
@@ -7305,6 +7309,12 @@ packages:
     resolution: {integrity: sha512-7ksyiu01NltBvEcLq9GcguF+7RGa5lDwozjgdbiXnlkro1FtMCcrVtHUWbKuYBSOZW74gC4KlnBcgRCwK2ERAw==}
     dependencies:
       '@shikijs/core': 1.1.1
+    dev: true
+
+  /shiki@1.1.2:
+    resolution: {integrity: sha512-qNzFwTv5uhEDNUIwp7wHjsrffVeLbmOgWnM5mZZhoiz7G2qAUvqVfUzuWfieD45/YAKipzCtdV9SndacKtABow==}
+    dependencies:
+      '@shikijs/core': 1.1.2
 
   /siginfo@2.0.0:
     resolution: {integrity: sha512-ybx0WO1/8bSBLEWXZvEd7gMW3Sn3JFlW3TvX1nREbDLRNQNaeNN8WK0meBwPdAaOI7TtRRRJn/Es1zhrrCHu7g==}

@@ -4,6 +4,7 @@ import { addPlugin, addTemplate, createResolver, defineNuxtModule } from '@nuxt/
 import type {} from '@nuxt/schema'
 import fg from 'fast-glob'
 import type { TwoslashOptions } from 'twoslash'
+import type { TwoslashFloatingVueOptions } from '@shikijs/vitepress-twoslash'
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {
@@ -23,6 +24,11 @@ export interface ModuleOptions {
    * Handbook options for Twoslash
    */
   handbookOptions?: TwoslashOptions['handbookOptions']
+
+  /**
+   * Options for the floating-vue renderer
+   */
+  floatingVueOptions?: TwoslashFloatingVueOptions
 }
 
 export default defineNuxtModule<ModuleOptions>({
