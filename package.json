@@ -31,7 +31,7 @@
   "dependencies": {
     "@nuxt/kit": "^3.10.1",
     "@nuxtjs/mdc": "^0.5.0",
-    "@shikijs/vitepress-twoslash": "^1.0.0",
+    "@shikijs/vitepress-twoslash": "^1.1.1",
     "fast-glob": "^3.3.2",
     "pathe": "^1.1.2"
   },
@@ -44,11 +44,11 @@
     "@nuxt/module-builder": "^0.5.5",
     "@nuxt/schema": "^3.10.1",
     "@nuxt/test-utils": "^3.11.0",
-    "@types/node": "^20.11.16",
+    "@types/node": "^20.11.17",
     "bumpp": "^9.3.0",
     "eslint": "^8.56.0",
     "nuxt": "^3.10.1",
-    "twoslash": "^0.1.2",
+    "twoslash": "^0.2.1",
     "vitest": "^1.2.2"
   },
   "publishConfig": {

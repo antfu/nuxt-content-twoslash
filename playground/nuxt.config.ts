@@ -10,4 +10,7 @@ export default defineNuxtConfig({
       theme: 'vitesse-light',
     },
   },
+  typescript: {
+    includeWorkspace: true,
+  },
 })

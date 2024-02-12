@@ -33,6 +33,8 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.nitro.alias ||= {}
     nuxt.options.nitro.alias['#twoslash-types'] = path.dst
 
+    // eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
+    // @ts-ignore
     nuxt.hook('mdc:configSources', async (sources: string[]) => {
       sources.push(resolver.resolve('./runtime/mdc.config'))
     })

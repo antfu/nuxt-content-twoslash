@@ -1,4 +1,5 @@
 import { defineConfig } from '@nuxtjs/mdc/config'
+import type { ShikiTransformer } from 'shiki'
 
 export default defineConfig({
   shiki: {
@@ -9,7 +10,7 @@ export default defineConfig({
         import('shiki/langs/typescript.mjs'),
       )
     },
-    transformers: async (_code, _lang, _theme, options) => {
+    transformers: async (_code, _lang, _theme, options): Promise<ShikiTransformer[]> => {
       // We only runs TwoSlash at build time
       // As Nuxt Content cache the result automatically, we don't need to ship twoslash in any production bundle
       if (import.meta.server && (import.meta.prerender || import.meta.dev)) {
@@ -43,7 +44,19 @@ export default defineConfig({
             }),
           ]
         }
-        // TODO: we should fallback to a transformer that remove twoslash notations for plain text
+      }
+      // Fallback to remove twoslash notations
+      else {
+        const { removeTwoslashNotations } = await import('twoslash/fallback')
+        return [
+          {
+            name: 'twoslash:fallback',
+            preprocess(code, options) {
+              if (options.meta?.__raw?.match(/\btwoslash\b/))
+                return removeTwoslashNotations(code)
+            },
+          },
+        ]
       }
       return []
     },
