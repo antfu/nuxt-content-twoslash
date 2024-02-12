@@ -8,42 +8,51 @@ export default defineConfig({
       await shiki.loadLanguage(
         import('shiki/langs/javascript.mjs'),
         import('shiki/langs/typescript.mjs'),
+        import('shiki/langs/vue.mjs'),
       )
     },
     transformers: async (_code, _lang, _theme, options): Promise<ShikiTransformer[]> => {
+      if (typeof options.meta !== 'string' || !options.meta?.match(/\btwoslash\b/))
+        return []
+
       // We only runs TwoSlash at build time
       // As Nuxt Content cache the result automatically, we don't need to ship twoslash in any production bundle
       if (import.meta.server && (import.meta.prerender || import.meta.dev)) {
-        const typeFiles = await import('#twoslash-types').then(mod => mod.default)
-        // TODO: read them from the local file system
+        const {
+          typeDecorations,
+          moduleOptions,
+        } = await import('#twoslash-meta')
+
         const prepend = [
           '/// <reference types="./.nuxt/nuxt.d.ts" />',
           '',
         ].join('\n')
 
-        if (typeof options.meta === 'string' && options.meta?.includes('twoslash')) {
-          // console.log('RENDERING TWOSLASH', _code)
-          const { transformerTwoslash, rendererFloatingVue } = await import('@shikijs/vitepress-twoslash')
-          return [
-            transformerTwoslash({
-              renderer: rendererFloatingVue({
-                floatingVue: {
-                  classMarkdown: 'prose prose-primary dark:prose-invert',
-                },
-              }),
-              twoslashOptions: {
-                extraFiles: {
-                  ...typeFiles,
-                  'index.ts': { prepend },
-                  'index.tsx': { prepend },
-                },
-                compilerOptions: {
-                  lib: ['esnext', 'dom'],
-                },
+        const { transformerTwoslash, rendererFloatingVue } = await import('@shikijs/vitepress-twoslash')
+        return [
+          transformerTwoslash({
+            throws: false,
+            renderer: rendererFloatingVue({
+              floatingVue: {
+                classMarkdown: 'prose prose-primary dark:prose-invert',
               },
             }),
-          ]
-        }
+            twoslashOptions: {
+              extraFiles: moduleOptions.includeNuxtTypes
+                ? {
+                    ...typeDecorations,
+                    'index.ts': { prepend },
+                    'index.tsx': { prepend },
+                  }
+                : undefined,
+              compilerOptions: {
+                lib: ['esnext', 'dom'],
+                ...moduleOptions.compilerOptions,
+              },
+              handbookOptions: moduleOptions.handbookOptions,
+            },
+          }),
+        ]
       }
       // Fallback to remove twoslash notations
       else {
@@ -51,14 +60,12 @@ export default defineConfig({
         return [
           {
             name: 'twoslash:fallback',
-            preprocess(code, options) {
-              if (options.meta?.__raw?.match(/\btwoslash\b/))
-                return removeTwoslashNotations(code)
+            preprocess(code) {
+              return removeTwoslashNotations(code)
             },
           },
         ]
       }
-      return []
     },
   },
 })
