@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises'
 import { join } from 'pathe'
 import { addPlugin, addTemplate, createResolver, defineNuxtModule } from '@nuxt/kit'
+import type {} from '@nuxt/schema'
 import fg from 'fast-glob'
 
 // Module options TypeScript interface definition
