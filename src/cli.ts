@@ -1,15 +1,18 @@
 /* eslint-disable no-console */
 import fs from 'node:fs/promises'
+import { existsSync } from 'node:fs'
 import process from 'node:process'
 import { loadNuxt } from '@nuxt/kit'
 import type { ModuleOptions } from '@nuxt/schema'
 import fg from 'fast-glob'
 import { unified } from 'unified'
 import type { Code } from 'mdast'
+import { join, resolve } from 'pathe'
 import c from 'picocolors'
 import remarkParse from 'remark-parse'
 import { visit } from 'unist-util-visit'
 import { codeToHast, getSingletonHighlighter } from 'shiki'
+import { cac } from 'cac'
 import { createTransformer } from './runtime/transformer'
 import { getTypeDecorations } from './utils'
 
@@ -19,23 +22,44 @@ interface TwoslashVerifyError {
   error: any
 }
 
-export async function verify() {
-  const nuxt = await loadNuxt({})
-  await nuxt.ready()
+export interface VerifyOptions {
+  resolveNuxt?: boolean
+  rootDir?: string
+  buildDir?: string
+  contentDir?: string
+}
+
+export async function verify(options: VerifyOptions = {}) {
+  const root = options.rootDir || process.cwd()
+  const {
+    resolveNuxt = existsSync(join(root, 'nuxt.config.js')) || existsSync(join(root, 'nuxt.config.ts')),
+  } = options
+
+  if (resolveNuxt)
+    console.log('Resolving Nuxt...')
+
+  const nuxt = resolveNuxt
+    ? await loadNuxt({ ready: true, cwd: root })
+    : undefined
+
   const twoslashOptions = {
     includeNuxtTypes: true,
-    ...((nuxt.options as any).twoslash || {}) as ModuleOptions,
+    ...((nuxt?.options as any)?.twoslash || {}) as ModuleOptions,
   }
+
+  const buildDir = resolve(root, options.buildDir || nuxt?.options.buildDir || '.nuxt')
+  const contentDir = resolve(root, options.contentDir || 'content')
 
   const typeDecorations: Record<string, string> = {}
   if (twoslashOptions.includeNuxtTypes)
-    await getTypeDecorations(nuxt.options.srcDir, typeDecorations)
+    await getTypeDecorations(buildDir, typeDecorations)
 
   const markdownFiles = await fg('**/*.md', {
     ignore: ['**/node_modules/**', '**/dist/**'],
     dot: false,
-    cwd: nuxt.options.srcDir,
+    cwd: contentDir,
     onlyFiles: true,
+    absolute: true,
     followSymbolicLinks: false,
   })
 
@@ -67,13 +91,17 @@ export async function verify() {
   const highlighter = await getSingletonHighlighter()
   await highlighter.loadLanguage('js')
 
-  console.log('Verifying twoslash in', markdownFiles.length, 'files...')
+  console.log('Verifying Twoslash in', markdownFiles.length, 'files...')
   console.log(markdownFiles.map(f => `  - ${f}`).join('\n'))
   console.log('')
 
   for (const path of markdownFiles) {
     currentFile = path
     const content = await fs.readFile(path, 'utf-8')
+
+    if (!content.includes('twoslash'))
+      continue
+
     const file = unified()
       .use(remarkParse)
       .parse(content)
@@ -86,7 +114,10 @@ export async function verify() {
       codeBlocks.push(node)
     })
 
-    console.log(`Verifying ${path} (${codeBlocks.length} twoslash code blocks)`)
+    if (!codeBlocks.length)
+      continue
+
+    console.log(`Checking ${path} (${codeBlocks.length} twoslash blocks)`)
 
     for (const block of codeBlocks) {
       currnetLine = block.position?.start?.line || 0
@@ -128,8 +159,20 @@ export async function verify() {
   }
 }
 
-const args = process.argv.slice(2)
-if (args[0] === 'verify')
-  verify()
-else
-  throw new Error(`Unknown command: ${args[0]}, expected "verify"`)
+const cli = cac('nuxt-content-twoslash')
+
+cli.command('verify', 'Verify twoslash code blocks in markdown files')
+  .option('--build-dir <dir>', 'The build directory of the Nuxt project')
+  .option('--content-dir <dir>', 'The content directory of the Nuxt project')
+  .option('--root-dir <dir>', 'The root directory of the Nuxt project')
+  .option('--resolve-nuxt', 'Resolve Nuxt project', { default: false })
+  .action(args => verify(args))
+
+cli.command('')
+  .action(() => {
+    throw new Error('Unknown command, expected `verify` command.')
+  })
+
+cli
+  .help()
+  .parse()

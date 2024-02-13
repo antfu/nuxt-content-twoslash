@@ -38,6 +38,7 @@
     "@nuxt/kit": "^3.10.1",
     "@nuxt/schema": "^3.10.1",
     "@shikijs/vitepress-twoslash": "^1.1.2",
+    "cac": "^6.7.14",
     "fast-glob": "^3.3.2",
     "pathe": "^1.1.2",
     "picocolors": "^1.0.0",
