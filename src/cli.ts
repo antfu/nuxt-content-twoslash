@@ -7,7 +7,7 @@ import type { ModuleOptions } from '@nuxt/schema'
 import fg from 'fast-glob'
 import { unified } from 'unified'
 import type { Code } from 'mdast'
-import { join, resolve } from 'pathe'
+import { join, relative, resolve } from 'pathe'
 import c from 'picocolors'
 import remarkParse from 'remark-parse'
 import { visit } from 'unist-util-visit'
@@ -30,6 +30,7 @@ export interface VerifyOptions {
 }
 
 export async function verify(options: VerifyOptions = {}) {
+  const realCwd = process.cwd()
   const root = options.rootDir || process.cwd()
   const {
     resolveNuxt = existsSync(join(root, 'nuxt.config.js')) || existsSync(join(root, 'nuxt.config.ts')),
@@ -92,7 +93,7 @@ export async function verify(options: VerifyOptions = {}) {
   await highlighter.loadLanguage('js')
 
   console.log('Verifying Twoslash in', markdownFiles.length, 'files...')
-  console.log(markdownFiles.map(f => `  - ${f}`).join('\n'))
+  console.log(markdownFiles.map(f => `  - ${relative(realCwd, f)}`).join('\n'))
   console.log('')
 
   for (const path of markdownFiles) {
@@ -117,7 +118,7 @@ export async function verify(options: VerifyOptions = {}) {
     if (!codeBlocks.length)
       continue
 
-    console.log(`Checking ${path} (${codeBlocks.length} twoslash blocks)`)
+    console.log(`Checking ${relative(realCwd, path)} (${codeBlocks.length} twoslash blocks)`)
 
     for (const block of codeBlocks) {
       currnetLine = block.position?.start?.line || 0
@@ -146,12 +147,12 @@ export async function verify(options: VerifyOptions = {}) {
   if (errors.length) {
     console.error(c.red('Twoslash verification failed'))
     for (const error of errors) {
-      console.error(c.yellow(`\n----------\nError in ${error.file}:${error.line}`))
+      console.error(c.yellow(`\n----------\nError in ${relative(realCwd, error.file)}:${error.line}`))
       console.error(c.red(String(error.error)))
     }
     console.error(c.yellow('----------'))
     console.error(c.red(`\nTwoslash verification failed with ${errors.length} errors.`))
-    console.error(c.red(errors.map(e => `  - ${e.file}:${e.line}`).join('\n')))
+    console.error(c.red(errors.map(e => `  - ${relative(realCwd, e.file)}:${e.line}`).join('\n')))
     process.exit(1)
   }
   else {
