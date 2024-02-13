@@ -1,10 +1,8 @@
-import fs from 'node:fs/promises'
-import { join } from 'pathe'
 import { addPlugin, addTemplate, createResolver, defineNuxtModule } from '@nuxt/kit'
 import type {} from '@nuxt/schema'
-import fg from 'fast-glob'
 import type { TwoslashOptions } from 'twoslash'
 import type { TwoslashFloatingVueOptions } from '@shikijs/vitepress-twoslash'
+import { getTypeDecorations } from './utils'
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {
@@ -75,18 +73,7 @@ export default defineNuxtModule<ModuleOptions>({
         console.error('[nuxt-content-twoslash] TwoSlash doesn\'t get initialized properly, you may need to put this module before `@nuxt/content`.')
     })
 
-    if (options.includeNuxtTypes) {
-      ;(async () => {
-        const files = await fg('**/*.d.ts', {
-          cwd: nuxt.options.buildDir,
-          onlyFiles: true,
-        })
-        await Promise.all(
-          files.map(async (file) => {
-            types[`.nuxt/${file}`] = await fs.readFile(join(nuxt.options.buildDir, file), 'utf-8')
-          }),
-        )
-      })()
-    }
+    if (options.includeNuxtTypes)
+      getTypeDecorations(nuxt.options.buildDir, types)
   },
 })

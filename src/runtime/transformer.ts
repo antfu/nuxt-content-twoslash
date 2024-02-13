@@ -1,9 +1,12 @@
+import type { ShikiTransformer } from 'shiki/core'
+import type { VitePressPluginTwoslashOptions } from '@shikijs/vitepress-twoslash'
 import type { ModuleOptions } from '../module'
 
 export async function createTransformer(
   moduleOptions: ModuleOptions,
   typeDecorations: Record<string, string>,
-) {
+  extraOptions?: VitePressPluginTwoslashOptions,
+): Promise<ShikiTransformer> {
   const prepend = [
     '/// <reference types="./.nuxt/nuxt.d.ts" />',
     '',
@@ -29,5 +32,6 @@ export async function createTransformer(
       },
       handbookOptions: moduleOptions.handbookOptions,
     },
+    ...extraOptions,
   })
 }

@@ -15,7 +15,9 @@
   },
   "main": "./dist/module.cjs",
   "types": "./dist/types.d.ts",
+  "bin": "./bin/nuxt-content-twoslash.mjs",
   "files": [
+    "bin",
     "dist"
   ],
   "scripts": {
@@ -38,7 +40,12 @@
     "@shikijs/vitepress-twoslash": "^1.1.2",
     "fast-glob": "^3.3.2",
     "pathe": "^1.1.2",
-    "twoslash": "^0.2.1"
+    "picocolors": "^1.0.0",
+    "remark-parse": "^11.0.0",
+    "shiki": "^1.1.2",
+    "twoslash": "^0.2.1",
+    "unified": "^11.0.4",
+    "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^2.6.4",
@@ -48,10 +55,12 @@
     "@nuxt/eslint-config": "^0.2.0",
     "@nuxt/module-builder": "^0.5.5",
     "@nuxt/test-utils": "^3.11.0",
+    "@types/mdast": "^4.0.3",
     "@types/node": "^20.11.17",
     "bumpp": "^9.3.0",
     "eslint": "^8.56.0",
     "nuxt": "^3.10.1",
+    "nuxt-content-twoslash": "workspace:*",
     "vitest": "^1.2.2"
   },
   "publishConfig": {

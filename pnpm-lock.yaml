@@ -26,9 +26,24 @@ importers:
       pathe:
         specifier: ^1.1.2
         version: 1.1.2
+      picocolors:
+        specifier: ^1.0.0
+        version: 1.0.0
+      remark-parse:
+        specifier: ^11.0.0
+        version: 11.0.0
+      shiki:
+        specifier: ^1.1.2
+        version: 1.1.2
       twoslash:
         specifier: ^0.2.1
         version: 0.2.1(typescript@5.3.3)
+      unified:
+        specifier: ^11.0.4
+        version: 11.0.4
+      unist-util-visit:
+        specifier: ^5.0.0
+        version: 5.0.0
     devDependencies:
       '@antfu/eslint-config':
         specifier: ^2.6.4
@@ -51,6 +66,9 @@ importers:
       '@nuxt/test-utils':
         specifier: ^3.11.0
         version: 3.11.0(h3@1.10.1)(rollup@3.29.4)(vite@5.0.12)(vitest@1.2.2)(vue-router@4.2.5)(vue@3.4.18)
+      '@types/mdast':
+        specifier: ^4.0.3
+        version: 4.0.3
       '@types/node':
         specifier: ^20.11.17
         version: 20.11.17
@@ -63,6 +81,9 @@ importers:
       nuxt:
         specifier: ^3.10.1
         version: 3.10.1(@types/node@20.11.17)(eslint@8.56.0)(rollup@3.29.4)(typescript@5.3.3)(vite@5.0.12)
+      nuxt-content-twoslash:
+        specifier: workspace:*
+        version: 'link:'
       vitest:
         specifier: ^1.2.2
         version: 1.2.2(@types/node@20.11.17)
@@ -72,6 +93,9 @@ importers:
       nuxt:
         specifier: latest
         version: 3.10.1(@types/node@20.11.17)(eslint@8.56.0)(rollup@3.29.4)(typescript@5.3.3)(vite@5.0.12)
+      picocolors:
+        specifier: ^1.0.0
+        version: 1.0.0
 
 packages:
 
