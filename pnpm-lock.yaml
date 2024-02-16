@@ -23,6 +23,9 @@ importers:
       cac:
         specifier: ^6.7.14
         version: 6.7.14
+      chokidar:
+        specifier: ^3.6.0
+        version: 3.6.0
       fast-glob:
         specifier: ^3.3.2
         version: 3.3.2
