@@ -28,6 +28,8 @@ export async function createTransformer(
         : undefined,
       compilerOptions: {
         lib: ['esnext', 'dom'],
+        jsx: 1, // Preserve
+        jsxImportSource: 'vue',
         ...moduleOptions.compilerOptions,
       },
       handbookOptions: moduleOptions.handbookOptions,
