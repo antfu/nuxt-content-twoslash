@@ -152,18 +152,20 @@ export async function verify(options: VerifyOptions = {}) {
 
   if (errors.length) {
     printErrors()
-    if (!options.watch)
-      process.exit(1)
+    process.exitCode = 1
   }
   else {
     console.log(c.green('Twoslash verification passed'))
   }
 
   if (options.watch) {
+    console.log(c.cyan('Watching for file changes...'))
     const chokidar = await import('chokidar')
     const watcher = chokidar.watch(markdownFiles, {
       ignoreInitial: true,
       ignorePermissionErrors: true,
+      disableGlobbing: true,
+      persistent: true,
     })
 
     watcher.on('change', async (path) => {
@@ -197,7 +199,9 @@ cli.command('verify', 'Verify twoslash code blocks in markdown files')
   .option('--root-dir <dir>', 'The root directory of the Nuxt project')
   .option('--resolve-nuxt', 'Resolve Nuxt project', { default: false })
   .option('-w, --watch', 'Watch files', { default: false })
-  .action(args => verify(args))
+  .action((args) => {
+    verify(args)
+  })
 
 cli.command('')
   .action(() => {
