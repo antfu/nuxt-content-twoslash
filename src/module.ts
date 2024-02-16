@@ -2,7 +2,7 @@ import { addPlugin, addTemplate, createResolver, defineNuxtModule } from '@nuxt/
 import type {} from '@nuxt/schema'
 import type { TwoslashOptions } from 'twoslash'
 import type { TwoslashFloatingVueOptions } from '@shikijs/vitepress-twoslash'
-import { getTypeDecorations } from './utils'
+import { getNuxtCompilerOptions, getTypeDecorations } from './utils'
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {
@@ -43,6 +43,7 @@ export default defineNuxtModule<ModuleOptions>({
     addPlugin(resolver.resolve('./runtime/plugin'))
 
     const types: Record<string, string> = {}
+    let compilerOptions: Record<string, any> = {}
 
     const path = addTemplate({
       filename: 'twoslash-meta.mjs',
@@ -51,6 +52,7 @@ export default defineNuxtModule<ModuleOptions>({
         return [
           `export const moduleOptions = ${JSON.stringify(options, null, 2)}`,
           `export const typeDecorations = ${JSON.stringify(types, null, 2)}`,
+          `export const compilerOptions = ${JSON.stringify(compilerOptions, null, 2)}`,
         ].join('\n')
       },
     })
@@ -60,6 +62,7 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.nitro.alias['#twoslash-meta'] = path.dst
 
     let isHookCalled = false
+    const promises: Promise<any>[] = []
 
     // eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
     // @ts-ignore
@@ -68,12 +71,22 @@ export default defineNuxtModule<ModuleOptions>({
       isHookCalled = true
     })
 
+    nuxt.hook('app:templates', async () => {
+      await Promise.all(promises)
+    })
+
     nuxt.hook('app:resolve', () => {
       if (!isHookCalled)
         console.error('[nuxt-content-twoslash] TwoSlash doesn\'t get initialized properly, you may need to put this module before `@nuxt/content`.')
     })
 
-    if (options.includeNuxtTypes)
-      getTypeDecorations(nuxt.options.buildDir, types)
+    if (options.includeNuxtTypes) {
+      promises.push(
+        getTypeDecorations(nuxt.options.buildDir, types),
+        getNuxtCompilerOptions(nuxt.options.buildDir).then((config) => {
+          compilerOptions = config
+        }),
+      )
+    }
   },
 })

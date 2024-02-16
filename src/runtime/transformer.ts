@@ -5,6 +5,7 @@ import type { ModuleOptions } from '../module'
 export async function createTransformer(
   moduleOptions: ModuleOptions,
   typeDecorations: Record<string, string>,
+  compilerOptions?: Record<string, any>,
   extraOptions?: VitePressPluginTwoslashOptions,
 ): Promise<ShikiTransformer> {
   const prepend = [
@@ -30,6 +31,7 @@ export async function createTransformer(
         lib: ['esnext', 'dom'],
         jsx: 1, // Preserve
         jsxImportSource: 'vue',
+        ...compilerOptions,
         ...moduleOptions.compilerOptions,
       },
       handbookOptions: moduleOptions.handbookOptions,

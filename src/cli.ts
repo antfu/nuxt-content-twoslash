@@ -15,7 +15,7 @@ import type { ShikiTransformer } from 'shiki'
 import { codeToHast, getSingletonHighlighter } from 'shiki'
 import { cac } from 'cac'
 import { createTransformer } from './runtime/transformer'
-import { getTypeDecorations } from './utils'
+import { getNuxtCompilerOptions, getTypeDecorations } from './utils'
 
 interface TwoslashVerifyError {
   file: string
@@ -105,8 +105,11 @@ export async function verify(options: VerifyOptions = {}) {
   const contentDir = resolve(root, options.contentDir || 'content')
 
   const typeDecorations: Record<string, string> = {}
-  if (twoslashOptions.includeNuxtTypes)
+  let compilerOptions: any = {}
+  if (twoslashOptions.includeNuxtTypes) {
     await getTypeDecorations(buildDir, typeDecorations)
+    compilerOptions = await getNuxtCompilerOptions(buildDir)
+  }
 
   const markdownFiles = await fg('**/*.md', {
     ignore: ['**/node_modules/**', '**/dist/**'],
@@ -120,6 +123,7 @@ export async function verify(options: VerifyOptions = {}) {
   const transformer = await createTransformer(
     twoslashOptions,
     typeDecorations,
+    compilerOptions,
     {
       onShikiError: (error) => {
         errors.push({

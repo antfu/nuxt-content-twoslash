@@ -20,10 +20,11 @@ export default defineConfig({
         const {
           typeDecorations,
           moduleOptions,
+          compilerOptions,
         } = await import('#twoslash-meta')
         return [
           await import('./transformer').then(({ createTransformer }) =>
-            createTransformer(moduleOptions, typeDecorations),
+            createTransformer(moduleOptions, typeDecorations, compilerOptions),
           ),
         ]
       }
