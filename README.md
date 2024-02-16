@@ -24,3 +24,11 @@ export default defineNuxtConfig({
   }
 })
 ```
+
+## CLI Usage
+
+This module also provides a command-line interface to verify TwoSlash code snippets in your markdown files, where you can guard the type safety in continuous integration.
+
+```bash
+npx nuxt-content-twoslash verify
+```
