@@ -18,6 +18,9 @@ export async function createTransformer(
     throws: false,
     renderer: rendererFloatingVue({
       floatingVue: moduleOptions.floatingVueOptions,
+      processHoverInfo(hover) {
+        return hover.replace(/globalThis\./g, '')
+      },
     }),
     twoslashOptions: {
       extraFiles: moduleOptions.includeNuxtTypes
