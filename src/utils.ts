@@ -20,15 +20,21 @@ export async function getTypeDecorations(dir: string, filesMap: Record<string, s
 export async function getNuxtCompilerOptions(dir: string) {
   const path = join(dir, 'tsconfig.json')
   if (existsSync(path)) {
-    const tsconfig = await fs.readFile(path, 'utf-8')
-    const config = JSON.parse(removeJSONComments(tsconfig)) || {}
-    const json = ts.convertCompilerOptionsFromJson(config.compilerOptions, dir, '').options
-    Object.entries(json.paths || {}).forEach(([key, value]) => {
-      json.paths![key] = value.map((v: string) => `./${relative(dirname(dir), resolve(dir, v))}`)
-      if (key === '#imports')
-        json.paths![key] = ['./.nuxt/imports.d.ts']
-    })
-    return json
+    try {
+      const tsconfig = await fs.readFile(path, 'utf-8')
+      const config = JSON.parse(removeJSONComments(tsconfig)) || {}
+      const json = ts.convertCompilerOptionsFromJson(config.compilerOptions, dir, '').options
+      Object.entries(json.paths || {}).forEach(([key, value]) => {
+        json.paths![key] = value.map((v: string) => `./${relative(dirname(dir), resolve(dir, v))}`)
+        if (key === '#imports')
+          json.paths![key] = ['./.nuxt/imports.d.ts']
+      })
+      return json
+    }
+    catch (e) {
+      console.error('[nuxt-content-twoslash] Failed to parse .nuxt/tsconfig.json', e)
+      return {}
+    }
   }
   return {}
 }
