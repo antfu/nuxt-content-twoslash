@@ -98,6 +98,7 @@ export async function verify(options: VerifyOptions = {}) {
 
   const twoslashOptions = {
     includeNuxtTypes: true,
+    enableInDev: true,
     ...((nuxt?.options as any)?.twoslash || {}) as ModuleOptions,
   }
 

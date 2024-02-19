@@ -22,6 +22,19 @@ export default defineConfig({
           moduleOptions,
           compilerOptions,
         } = await import('#twoslash-meta')
+
+        if (import.meta.dev && !moduleOptions.enableInDev) {
+          const { removeTwoslashNotations } = await import('twoslash/fallback')
+          return [
+            {
+              name: 'twoslash:fallback',
+              preprocess(code) {
+                return removeTwoslashNotations(code)
+              },
+            },
+          ]
+        }
+
         return [
           await import('./transformer').then(({ createTransformer }) =>
             createTransformer(moduleOptions, typeDecorations, compilerOptions),

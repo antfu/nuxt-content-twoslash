@@ -27,6 +27,19 @@ export interface ModuleOptions {
    * Options for the floating-vue renderer
    */
   floatingVueOptions?: TwoslashFloatingVueOptions
+
+  /**
+   * Enable in development mode
+   *
+   * @default true
+   */
+  enableInDev?: boolean
+
+  /**
+   * Throw errors when type error occurs
+   * @default
+   */
+  throws?: boolean
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -37,6 +50,7 @@ export default defineNuxtModule<ModuleOptions>({
   // Default configuration options of the Nuxt module
   defaults: {
     includeNuxtTypes: true,
+    enableInDev: true,
   },
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)

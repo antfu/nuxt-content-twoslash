@@ -15,7 +15,7 @@ export async function createTransformer(
 
   const { transformerTwoslash, rendererFloatingVue } = await import('@shikijs/vitepress-twoslash')
   return transformerTwoslash({
-    throws: false,
+    throws: !!moduleOptions.throws,
     renderer: rendererFloatingVue({
       floatingVue: moduleOptions.floatingVueOptions,
       processHoverInfo(hover) {
