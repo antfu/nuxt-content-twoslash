@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises'
+import { existsSync } from 'node:fs'
 import { dirname, join, relative, resolve } from 'pathe'
 import fg from 'fast-glob'
 import ts from 'typescript'
@@ -17,15 +18,19 @@ export async function getTypeDecorations(dir: string, filesMap: Record<string, s
 }
 
 export async function getNuxtCompilerOptions(dir: string) {
-  const tsconfig = await fs.readFile(join(dir, 'tsconfig.json'), 'utf-8')
-  const config = JSON.parse(removeJSONComments(tsconfig)) || {}
-  const json = ts.convertCompilerOptionsFromJson(config.compilerOptions, dir, '').options
-  Object.entries(json.paths || {}).forEach(([key, value]) => {
-    json.paths![key] = value.map((v: string) => `./${relative(dirname(dir), resolve(dir, v))}`)
-    if (key === '#imports')
-      json.paths![key] = ['./.nuxt/imports.d.ts']
-  })
-  return json
+  const path = join(dir, 'tsconfig.json')
+  if (existsSync(path)) {
+    const tsconfig = await fs.readFile(path, 'utf-8')
+    const config = JSON.parse(removeJSONComments(tsconfig)) || {}
+    const json = ts.convertCompilerOptionsFromJson(config.compilerOptions, dir, '').options
+    Object.entries(json.paths || {}).forEach(([key, value]) => {
+      json.paths![key] = value.map((v: string) => `./${relative(dirname(dir), resolve(dir, v))}`)
+      if (key === '#imports')
+        json.paths![key] = ['./.nuxt/imports.d.ts']
+    })
+    return json
+  }
+  return {}
 }
 
 export function removeJSONComments(content: string) {

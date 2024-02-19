@@ -62,7 +62,6 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.nitro.alias['#twoslash-meta'] = path.dst
 
     let isHookCalled = false
-    const promises: Promise<any>[] = []
 
     // eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
     // @ts-ignore
@@ -71,22 +70,20 @@ export default defineNuxtModule<ModuleOptions>({
       isHookCalled = true
     })
 
-    nuxt.hook('app:templates', async () => {
-      await Promise.all(promises)
-    })
+    if (options.includeNuxtTypes) {
+      nuxt.hook('app:templates', async () => {
+        await Promise.all([
+          getTypeDecorations(nuxt.options.buildDir, types),
+          getNuxtCompilerOptions(nuxt.options.buildDir).then((config) => {
+            compilerOptions = config
+          }),
+        ])
+      })
+    }
 
     nuxt.hook('app:resolve', () => {
       if (!isHookCalled)
         console.error('[nuxt-content-twoslash] TwoSlash doesn\'t get initialized properly, you may need to put this module before `@nuxt/content`.')
     })
-
-    if (options.includeNuxtTypes) {
-      promises.push(
-        getTypeDecorations(nuxt.options.buildDir, types),
-        getNuxtCompilerOptions(nuxt.options.buildDir).then((config) => {
-          compilerOptions = config
-        }),
-      )
-    }
   },
 })
