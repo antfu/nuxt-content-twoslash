@@ -38,30 +38,25 @@ To start using Twoslash in your Nuxt Content markdown files, you will need to ad
 
 Try out the below code snippet and watch the magic happen.
 
+````md
+```ts twoslash
+import { ref } from 'vue'
+
+const message = ref('Hello')
+```
+
 ```vue twoslash
 <script setup>
-import { onMounted, ref } from 'vue'
-
+import { ref } from 'vue'
 // Reactive state.
 const count = ref(0)
-
-// Functions that mutate state and trigger updates.
-function increment() {
-  count.value++
-}
-
-// Lifecycle hooks.
-onMounted(() => {
-  console.log(`The initial count is ${count.value}.`)
-})
 </script>
 
 <template>
-  <button @click="increment">
-    Count is: {{ count }}
-  </button>
+  <button>Count is: {{ count }}</button>
 </template>
 ```
+````
 
 For more advanced usage, please see the [Twoslash Notations](https://twoslash.netlify.app/refs/notations).
 
