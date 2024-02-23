@@ -2,9 +2,19 @@
 
 [TwoSlash](https://github.com/twoslashes/twoslash) integrations for Nuxt Content.
 
+## Installation
+
+1. Install the `nuxt-content-twoslash` module to your project:
+
 ```bash
+pnpm add nuxt-content-twoslash
+#
+yarn add nuxt-content-twoslash
+#
 npm install nuxt-content-twoslash
 ```
+
+2. Add it to your `modules` section in your `nuxt.config`, before `@nuxt/content`:
 
 ```ts
 // nuxt.config.js
@@ -21,6 +31,39 @@ export default defineNuxtConfig({
   }
 })
 ```
+
+## Usage
+
+To start using twoslash in your Nuxt Content markdown files, you will need to add `twoslash` within your markdown code block tag.
+
+Try out the below code snippet and watch the magic happen.
+
+```vue twoslash
+<script setup>
+import { onMounted, ref } from 'vue'
+
+// Reactive state.
+const count = ref(0)
+
+// Functions that mutate state and trigger updates.
+function increment() {
+  count.value++
+}
+
+// Lifecycle hooks.
+onMounted(() => {
+  console.log(`The initial count is ${count.value}.`)
+})
+</script>
+
+<template>
+  <button @click="increment">
+    Count is: {{ count }}
+  </button>
+</template>
+```
+
+For more advanced usage, please see the [Twoslash Notations](https://twoslash.netlify.app/refs/notations).
 
 ## How it works
 
