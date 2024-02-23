@@ -34,7 +34,7 @@ export default defineNuxtConfig({
 
 ## Usage
 
-To start using twoslash in your Nuxt Content markdown files, you will need to add `twoslash` within your markdown code block tag.
+To start using Twoslash in your Nuxt Content markdown files, you will need to add `twoslash` within your markdown code block tag.
 
 Try out the below code snippet and watch the magic happen.
 
