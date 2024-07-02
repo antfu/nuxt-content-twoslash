@@ -1,7 +1,7 @@
 {
   "name": "nuxt-content-twoslash",
   "type": "module",
-  "version": "0.0.10",
+  "version": "0.1.0",
   "packageManager": "pnpm@9.4.0",
   "description": "Enable TwoSlash for Nuxt Content",
   "license": "MIT",
