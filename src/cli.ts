@@ -29,6 +29,7 @@ export interface VerifyOptions {
   buildDir?: string
   contentDir?: string
   watch?: boolean
+  languages?: string
 }
 
 let currentFile = ''
@@ -143,8 +144,12 @@ export async function verify(options: VerifyOptions = {}) {
     },
   )
 
+  const additionalLanguages = options.languages?.split(',').map(l => l.trim()) || []
   const highlighter = await getSingletonHighlighter()
-  await highlighter.loadLanguage('js')
+  await Promise.all([
+    highlighter.loadLanguage('js'),
+    ...additionalLanguages.map(lang => highlighter.loadLanguage(lang)),
+  ])
 
   console.log('Verifying Twoslash in', markdownFiles.length, 'files...')
   console.log(markdownFiles.map(f => `  - ${relative(realCwd, f)}`).join('\n'))
@@ -202,6 +207,7 @@ cli.command('verify', 'Verify twoslash code blocks in markdown files')
   .option('--build-dir <dir>', 'The build directory of the Nuxt project')
   .option('--content-dir <dir>', 'The content directory of the Nuxt project')
   .option('--root-dir <dir>', 'The root directory of the Nuxt project')
+  .option('--languages <langs>', 'Additional languages to load (comma-separated)')
   .option('--resolve-nuxt', 'Resolve Nuxt project', { default: false })
   .option('-w, --watch', 'Watch files', { default: false })
   .action((args) => {
