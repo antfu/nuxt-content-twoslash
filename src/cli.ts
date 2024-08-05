@@ -11,7 +11,7 @@ import { join, relative, resolve } from 'pathe'
 import c from 'picocolors'
 import remarkParse from 'remark-parse'
 import { visit } from 'unist-util-visit'
-import type { ShikiTransformer } from 'shiki'
+import type { BuiltinLanguage, ShikiTransformer } from 'shiki'
 import { codeToHast, getSingletonHighlighter } from 'shiki'
 import { cac } from 'cac'
 import { createTransformer } from './runtime/transformer'
@@ -148,7 +148,7 @@ export async function verify(options: VerifyOptions = {}) {
   const highlighter = await getSingletonHighlighter()
   await Promise.all([
     highlighter.loadLanguage('js'),
-    ...additionalLanguages.map(lang => highlighter.loadLanguage(lang)),
+    ...additionalLanguages.map(lang => highlighter.loadLanguage(lang as BuiltinLanguage)),
   ])
 
   console.log('Verifying Twoslash in', markdownFiles.length, 'files...')

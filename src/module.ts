@@ -77,7 +77,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     let isHookCalled = false
 
-    // eslint-disable-next-line ts/ban-ts-comment, ts/prefer-ts-expect-error
+    // eslint-disable-next-line ts/ban-ts-comment
     // @ts-ignore
     nuxt.hook('mdc:configSources', async (sources: string[]) => {
       sources.push(resolver.resolve('./runtime/mdc.config'))
