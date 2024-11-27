@@ -1,5 +1,5 @@
-import type { ShikiTransformer } from 'shiki/core'
 import type { VitePressPluginTwoslashOptions } from '@shikijs/vitepress-twoslash'
+import type { ShikiTransformer } from 'shiki/core'
 import type { ModuleOptions } from '../module'
 
 export async function createTransformer(

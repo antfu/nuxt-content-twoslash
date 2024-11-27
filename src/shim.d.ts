@@ -5,8 +5,8 @@ declare module '#twoslash-meta' {
   const compilerOptions: Record<string, any>
   const moduleOptions: ModuleOptions
   export {
-    typeDecorations,
-    moduleOptions,
     compilerOptions,
+    moduleOptions,
+    typeDecorations,
   }
 }

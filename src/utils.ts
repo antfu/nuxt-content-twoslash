@@ -1,7 +1,7 @@
-import fs from 'node:fs/promises'
 import { existsSync } from 'node:fs'
-import { dirname, join, relative, resolve } from 'pathe'
+import fs from 'node:fs/promises'
 import fg from 'fast-glob'
+import { dirname, join, relative, resolve } from 'pathe'
 import ts from 'typescript'
 
 export async function getTypeDecorations(dir: string, filesMap: Record<string, string> = {}) {

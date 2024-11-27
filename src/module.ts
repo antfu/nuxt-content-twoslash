@@ -1,7 +1,7 @@
-import { addPlugin, addTemplate, createResolver, defineNuxtModule } from '@nuxt/kit'
 import type {} from '@nuxt/schema'
-import type { TwoslashOptions } from 'twoslash'
 import type { TwoslashFloatingVueOptions } from '@shikijs/vitepress-twoslash'
+import type { TwoslashOptions } from 'twoslash'
+import { addPlugin, addTemplate, createResolver, defineNuxtModule } from '@nuxt/kit'
 import { getNuxtCompilerOptions, getTypeDecorations } from './utils'
 
 // Module options TypeScript interface definition

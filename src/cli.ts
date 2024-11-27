@@ -1,19 +1,18 @@
-/* eslint-disable no-console */
-import fs from 'node:fs/promises'
+import type { ModuleOptions } from '@nuxt/schema'
+import type { Code } from 'mdast'
+import type { BuiltinLanguage, ShikiTransformer } from 'shiki'
 import { existsSync } from 'node:fs'
+import fs from 'node:fs/promises'
 import process from 'node:process'
 import { loadNuxt } from '@nuxt/kit'
-import type { ModuleOptions } from '@nuxt/schema'
+import { cac } from 'cac'
 import fg from 'fast-glob'
-import { unified } from 'unified'
-import type { Code } from 'mdast'
 import { join, relative, resolve } from 'pathe'
 import c from 'picocolors'
 import remarkParse from 'remark-parse'
-import { visit } from 'unist-util-visit'
-import type { BuiltinLanguage, ShikiTransformer } from 'shiki'
 import { codeToHast, getSingletonHighlighter } from 'shiki'
-import { cac } from 'cac'
+import { unified } from 'unified'
+import { visit } from 'unist-util-visit'
 import { createTransformer } from './runtime/transformer'
 import { getNuxtCompilerOptions, getTypeDecorations } from './utils'
 
@@ -174,7 +173,6 @@ export async function verify(options: VerifyOptions = {}) {
     const watcher = chokidar.watch(markdownFiles, {
       ignoreInitial: true,
       ignorePermissionErrors: true,
-      disableGlobbing: true,
       persistent: true,
     })
 
