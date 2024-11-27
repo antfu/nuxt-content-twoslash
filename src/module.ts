@@ -85,7 +85,7 @@ export default defineNuxtModule<ModuleOptions>({
     })
 
     if (options.includeNuxtTypes) {
-      nuxt.hook('app:templates', async () => {
+      nuxt.hook('app:templatesGenerated', async () => {
         await Promise.all([
           getTypeDecorations(nuxt.options.buildDir, types),
           getNuxtCompilerOptions(nuxt.options.buildDir).then((config) => {
