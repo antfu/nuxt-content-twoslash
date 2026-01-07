@@ -1,3 +1,4 @@
+import type {} from '@nuxtjs/mdc'
 import { defineConfig } from '@nuxtjs/mdc/config'
 
 export default defineConfig({
@@ -21,7 +22,7 @@ export default defineConfig({
           typeDecorations,
           moduleOptions,
           compilerOptions,
-        } = await import('#twoslash-meta')
+        } = await import('#build/twoslash-meta.mjs')
 
         if (import.meta.dev && !moduleOptions.enableInDev) {
           const { removeTwoslashNotations } = await import('twoslash/fallback')

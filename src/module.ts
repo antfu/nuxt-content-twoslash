@@ -65,15 +65,15 @@ export default defineNuxtModule<ModuleOptions>({
       getContents: () => {
         return [
           `export const moduleOptions = ${JSON.stringify(options, null, 2)}`,
+          `/** @type { Record<string, string> } */`,
           `export const typeDecorations = ${JSON.stringify(types, null, 2)}`,
+          `/** @type { Record<string, string> } */`,
           `export const compilerOptions = ${JSON.stringify(compilerOptions, null, 2)}`,
         ].join('\n')
       },
     })
-    nuxt.options.alias ||= {}
-    nuxt.options.alias['#twoslash-meta'] = path.dst
     nuxt.options.nitro.alias ||= {}
-    nuxt.options.nitro.alias['#twoslash-meta'] = path.dst
+    nuxt.options.nitro.alias['#build/twoslash-meta.mjs'] = path.dst
 
     let isHookCalled = false
 
