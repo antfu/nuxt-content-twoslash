@@ -7,14 +7,16 @@
   "license": "MIT",
   "repository": "antfu/nuxt-content-twoslash",
   "exports": {
-    ".": {
-      "types": "./dist/types.d.ts",
-      "import": "./dist/module.mjs",
-      "require": "./dist/module.cjs"
+    ".": "./dist/module.mjs"
+  },
+  "main": "./dist/module.mjs",
+  "typesVersions": {
+    "*": {
+      ".": [
+        "./dist/module.d.mts"
+      ]
     }
   },
-  "main": "./dist/module.cjs",
-  "types": "./dist/types.d.ts",
   "bin": "./bin/nuxt-content-twoslash.mjs",
   "files": [
     "bin",
@@ -23,9 +25,9 @@
   "scripts": {
     "build": "nuxt-module-build build",
     "prepack": "pnpm run build",
-    "dev": "nuxi dev playground",
-    "dev:build": "nuxi build playground",
-    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
+    "dev": "nuxt dev playground",
+    "dev:build": "nuxt build playground",
+    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt prepare playground",
     "release": "bumpp && pnpm publish",
     "lint": "eslint .",
     "test": "vitest run",
@@ -57,7 +59,7 @@
     "@nuxt/content": "^2.13.4",
     "@nuxt/devtools": "latest",
     "@nuxt/eslint-config": "^0.7.2",
-    "@nuxt/module-builder": "^0.8.4",
+    "@nuxt/module-builder": "^1.0.2",
     "@nuxt/test-utils": "^3.14.4",
     "@types/mdast": "^4.0.4",
     "@types/node": "^22.10.0",

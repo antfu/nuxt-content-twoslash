@@ -1,6 +1,6 @@
 export default defineNuxtConfig({
   modules: [
-    '../src/module',
+    'nuxt-content-twoslash',
     '@nuxt/content',
   ],
   twoslash: {},
@@ -9,8 +9,5 @@ export default defineNuxtConfig({
     highlight: {
       theme: 'vitesse-light',
     },
-  },
-  typescript: {
-    includeWorkspace: true,
   },
 })
