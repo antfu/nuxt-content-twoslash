@@ -122,6 +122,7 @@ export async function verify(options: VerifyOptions = {}) {
   })
 
   const transformer = await createTransformer(
+    root,
     twoslashOptions,
     typeDecorations,
     compilerOptions,

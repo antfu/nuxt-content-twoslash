@@ -64,6 +64,7 @@ export default defineNuxtModule<ModuleOptions>({
       write: true,
       getContents: () => {
         return [
+          `export const rootDir = ${JSON.stringify(nuxt.options.rootDir)};`,
           `export const moduleOptions = ${JSON.stringify(options, null, 2)}`,
           `export const typeDecorations = ${JSON.stringify(types, null, 2)}`,
           `export const compilerOptions = ${JSON.stringify(compilerOptions, null, 2)}`,
