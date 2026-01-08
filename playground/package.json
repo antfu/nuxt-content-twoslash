@@ -8,6 +8,8 @@
     "generate": "nuxi generate"
   },
   "dependencies": {
-    "nuxt": "^3.20.2"
+    "@nuxt/content": "^2.13.4",
+    "nuxt": "^3.20.2",
+    "nuxt-content-twoslash": "workspace:*"
   }
 }
