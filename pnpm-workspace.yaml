@@ -2,5 +2,9 @@ shellEmulator: true
 
 trustPolicy: no-downgrade
 
+shamefullyHoist: true
+
+ignoreWorkspaceRootCheck: true
+
 packages:
   - playground
