@@ -1,5 +1,5 @@
 declare module '#twoslash-meta' {
-  import type { ModuleOptions } from './module'
+  import type { ModuleOptions } from 'nuxt-content-twoslash'
 
   const rootDir: string
   const typeDecorations: Record<string, string>

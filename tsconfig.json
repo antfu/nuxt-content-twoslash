@@ -1,12 +1,6 @@
 {
-  "extends": "./playground/.nuxt/tsconfig.json",
-  "compilerOptions": {
-    "target": "ESNext",
-    "moduleDetection": "force",
-    "module": "ESNext",
-    "moduleResolution": "Bundler"
-  },
-  "include": [
-    "src/**/*.ts"
+  "extends": "./.nuxt/tsconfig.json",
+  "exclude": [
+    "playground"
   ]
 }

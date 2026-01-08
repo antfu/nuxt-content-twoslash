@@ -66,7 +66,9 @@ export default defineNuxtModule<ModuleOptions>({
         return [
           `export const rootDir = ${JSON.stringify(nuxt.options.rootDir)};`,
           `export const moduleOptions = ${JSON.stringify(options, null, 2)}`,
+          `/** @type { Record<string, string> } */`,
           `export const typeDecorations = ${JSON.stringify(types, null, 2)}`,
+          `/** @type { Record<string, string> } */`,
           `export const compilerOptions = ${JSON.stringify(compilerOptions, null, 2)}`,
         ].join('\n')
       },
