@@ -73,6 +73,8 @@ export default defineNuxtModule<ModuleOptions>({
         ].join('\n')
       },
     })
+    nuxt.options.alias ||= {}
+    nuxt.options.alias['#twoslash-meta'] = path.dst
     nuxt.options.nitro.alias ||= {}
     nuxt.options.nitro.alias['#twoslash-meta'] = path.dst
 
