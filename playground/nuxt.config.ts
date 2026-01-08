@@ -4,11 +4,6 @@ export default defineNuxtConfig({
     'nuxt-content-twoslash',
     '@nuxt/content',
   ],
-  nitro: {
-    prerender: {
-      routes: ['/'],
-    },
-  },
   twoslash: {},
   content: {
     documentDriven: true,
