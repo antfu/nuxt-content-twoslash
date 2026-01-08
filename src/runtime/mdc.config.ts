@@ -19,6 +19,7 @@ export default defineConfig({
       // As Nuxt Content cache the result automatically, we don't need to ship twoslash in any production bundle
       if (import.meta.server && (import.meta.prerender || import.meta.dev)) {
         const {
+          rootDir,
           typeDecorations,
           moduleOptions,
           compilerOptions,
@@ -38,7 +39,7 @@ export default defineConfig({
 
         return [
           await import('./transformer').then(({ createTransformer }) =>
-            createTransformer(moduleOptions, typeDecorations, compilerOptions),
+            createTransformer(rootDir, moduleOptions, typeDecorations, compilerOptions),
           ),
         ]
       }

@@ -1,15 +1,17 @@
 import type { VitePressPluginTwoslashOptions } from '@shikijs/vitepress-twoslash'
 import type { ModuleOptions } from 'nuxt-content-twoslash'
 import type { ShikiTransformer } from 'shiki/core'
+import { join } from 'pathe'
 
 export async function createTransformer(
+  rootDir: string,
   moduleOptions: ModuleOptions,
   typeDecorations: Record<string, string>,
   compilerOptions?: Record<string, any>,
   extraOptions?: VitePressPluginTwoslashOptions,
 ): Promise<ShikiTransformer> {
   const prepend = [
-    '/// <reference types="./.nuxt/nuxt.d.ts" />',
+    `/// <reference path="${join(rootDir, '.nuxt/nuxt.d.ts')}" />`,
     '',
   ].join('\n')
 

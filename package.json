@@ -32,6 +32,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest watch",
+    "test:e2e": "playwright test",
     "typecheck": "nr dev:prepare && tsc --noEmit && cd playground && pnpm tsc -b --noEmit"
   },
   "peerDependencies": {
@@ -61,12 +62,14 @@
     "@nuxt/eslint-config": "^0.7.2",
     "@nuxt/module-builder": "^1.0.2",
     "@nuxt/test-utils": "^3.14.4",
+    "@playwright/test": "^1.57.0",
     "@types/mdast": "^4.0.4",
     "@types/node": "^22.10.0",
     "bumpp": "^9.8.1",
     "eslint": "^9.15.0",
     "nuxt": "^3.14.1592",
     "nuxt-content-twoslash": "workspace:*",
+    "playwright-core": "^1.57.0",
     "unbuild": "^3.6.1",
     "vite": "^6.0.1",
     "vitest": "^2.1.6"
