@@ -74,7 +74,7 @@ export default defineNuxtModule<ModuleOptions>({
       },
     })
     nuxt.options.nitro.alias ||= {}
-    nuxt.options.nitro.alias['#build/twoslash-meta.mjs'] = path.dst
+    nuxt.options.nitro.alias['#twoslash-meta'] = path.dst
 
     let isHookCalled = false
 

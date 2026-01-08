@@ -23,7 +23,7 @@ export default defineConfig({
           typeDecorations,
           moduleOptions,
           compilerOptions,
-        } = await import('#build/twoslash-meta.mjs')
+        } = await import('#twoslash-meta')
 
         if (import.meta.dev && !moduleOptions.enableInDev) {
           const { removeTwoslashNotations } = await import('twoslash/fallback')
