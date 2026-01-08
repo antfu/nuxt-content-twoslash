@@ -33,7 +33,7 @@
     "test": "vitest run",
     "test:watch": "vitest watch",
     "test:e2e": "playwright test",
-    "typecheck": "nr dev:prepare && tsc --noEmit && cd playground && pnpm tsc -b --noEmit"
+    "typecheck": "nr dev:prepare && tsc --noEmit && cd playground && pnpm tsc --noEmit"
   },
   "peerDependencies": {
     "@nuxtjs/mdc": ">=0.5.0"
