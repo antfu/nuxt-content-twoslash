@@ -73,6 +73,9 @@ jobs:
       - name: Install
         run: nci
 
+      - name: Prepare build environment
+        run: nr dev:prepare
+
       - name: Build
         run: nr build
 
