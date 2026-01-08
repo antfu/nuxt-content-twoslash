@@ -99,8 +99,8 @@ export default defineNuxtModule<ModuleOptions>({
     }
 
     nuxt.hook('app:resolve', () => {
-      if (!isHookCalled)
-        console.error('[nuxt-content-twoslash] TwoSlash doesn\'t get initialized properly, you may need to put this module before `@nuxt/content`.')
+      if (!isHookCalled && !nuxt.options._prepare)
+        console.error('[nuxt-content-twoslash] TwoSlash didn\'t get initialized properly. You may need to put this module before `@nuxt/content`.')
     })
   },
 })
