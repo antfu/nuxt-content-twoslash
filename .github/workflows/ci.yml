@@ -79,6 +79,9 @@ jobs:
       - name: Build
         run: nr build
 
+      - name: Install playwright
+        run: pnpm exec playwright install
+
       # - name: Test
       #   run: nr test
 
