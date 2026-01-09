@@ -7,13 +7,20 @@
   "license": "MIT",
   "repository": "antfu/nuxt-content-twoslash",
   "exports": {
-    ".": "./dist/module.mjs"
+    ".": "./dist/module.mjs",
+    "./runtime/transformer": {
+      "import": "./dist/runtime/transformer.js",
+      "types": "./dist/runtime/transformer.d.ts"
+    }
   },
   "main": "./dist/module.mjs",
   "typesVersions": {
     "*": {
       ".": [
         "./dist/module.d.mts"
+      ],
+      "runtime/transformer": [
+        "./dist/runtime/transformer.d.ts"
       ]
     }
   },

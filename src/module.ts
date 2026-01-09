@@ -1,6 +1,8 @@
 import type {} from '@nuxt/schema'
 import type { TwoslashFloatingVueOptions } from '@shikijs/vitepress-twoslash'
 import type { TwoslashOptions } from 'twoslash'
+import { mkdirSync, writeFileSync } from 'node:fs'
+import { dirname, join } from 'pathe'
 import { addPlugin, addTemplate, createResolver, defineNuxtModule } from '@nuxt/kit'
 import { getNuxtCompilerOptions, getTypeDecorations } from './utils'
 
@@ -59,19 +61,25 @@ export default defineNuxtModule<ModuleOptions>({
     const types: Record<string, string> = {}
     let compilerOptions: Record<string, any> = {}
 
+    const getMetaContent = () => [
+      `export const rootDir = ${JSON.stringify(nuxt.options.rootDir)};`,
+      `export const moduleOptions = ${JSON.stringify(options, null, 2)}`,
+      `/** @type { Record<string, string> } */`,
+      `export const typeDecorations = ${JSON.stringify(types, null, 2)}`,
+      `/** @type { Record<string, string> } */`,
+      `export const compilerOptions = ${JSON.stringify(compilerOptions, null, 2)}`,
+    ].join('\n')
+
+    // Write twoslash-meta.mjs immediately - Content v3's jiti needs it when importing mdc config
+    const twoslashMetaPath = join(nuxt.options.buildDir, 'twoslash-meta.mjs')
+    mkdirSync(dirname(twoslashMetaPath), { recursive: true })
+    writeFileSync(twoslashMetaPath, getMetaContent())
+
+    // Also register as template for Nuxt's type generation
     const path = addTemplate({
       filename: 'twoslash-meta.mjs',
       write: true,
-      getContents: () => {
-        return [
-          `export const rootDir = ${JSON.stringify(nuxt.options.rootDir)};`,
-          `export const moduleOptions = ${JSON.stringify(options, null, 2)}`,
-          `/** @type { Record<string, string> } */`,
-          `export const typeDecorations = ${JSON.stringify(types, null, 2)}`,
-          `/** @type { Record<string, string> } */`,
-          `export const compilerOptions = ${JSON.stringify(compilerOptions, null, 2)}`,
-        ].join('\n')
-      },
+      getContents: getMetaContent,
     })
     nuxt.options.alias ||= {}
     nuxt.options.alias['#twoslash-meta'] = path.dst
@@ -80,10 +88,60 @@ export default defineNuxtModule<ModuleOptions>({
 
     let isHookCalled = false
 
+    // Generate mdc config for Content v3 compatibility
+    // Content v3 runs parsing in Node.js where import.meta.server is undefined
+    // and #aliases don't resolve through native ESM imports
+    const mdcConfigContent = `
+import { defineConfig } from '@nuxtjs/mdc/config'
+
+const fallback = async () => {
+  const { removeTwoslashNotations } = await import('twoslash/fallback')
+  return [{ name: 'twoslash:fallback', preprocess: (code) => removeTwoslashNotations(code) }]
+}
+
+export default defineConfig({
+  shiki: {
+    async setup(shiki) {
+      await shiki.loadLanguage(
+        import('shiki/langs/javascript.mjs'),
+        import('shiki/langs/typescript.mjs'),
+        import('shiki/langs/vue.mjs'),
+      )
+    },
+    transformers: async (_code, _lang, _theme, options) => {
+      if (typeof options.meta !== 'string' || !options.meta.match(/\\btwoslash\\b/))
+        return []
+
+      // Use typeof window instead of import.meta.server (works in Node.js)
+      if (typeof globalThis.window !== 'undefined')
+        return fallback()
+
+      try {
+        // Use relative import (both files in .nuxt/)
+        const { rootDir, typeDecorations, moduleOptions, compilerOptions } = await import('./twoslash-meta.mjs')
+
+        // Use process.env instead of import.meta.dev
+        if (process.env.NODE_ENV === 'development' && !moduleOptions.enableInDev)
+          return fallback()
+
+        const { createTransformer } = await import('nuxt-content-twoslash/runtime/transformer')
+        return [await createTransformer(rootDir, moduleOptions, typeDecorations, compilerOptions)]
+      } catch (e) {
+        console.warn('[nuxt-content-twoslash] Failed:', e instanceof Error ? e.message : e)
+        return fallback()
+      }
+    },
+  },
+})
+`
+    const mdcConfigPath = join(nuxt.options.buildDir, 'twoslash-mdc.config.mjs')
+    mkdirSync(dirname(mdcConfigPath), { recursive: true })
+    writeFileSync(mdcConfigPath, mdcConfigContent)
+
     // eslint-disable-next-line ts/ban-ts-comment
     // @ts-ignore
     nuxt.hook('mdc:configSources', async (sources: string[]) => {
-      sources.push(resolver.resolve('./runtime/mdc.config'))
+      sources.push(mdcConfigPath)
       isHookCalled = true
     })
 
