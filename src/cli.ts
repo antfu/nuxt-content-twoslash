@@ -32,7 +32,7 @@ export interface VerifyOptions {
 }
 
 let currentFile = ''
-let currnetLine = 0
+let currentLine = 0
 const realCwd = process.cwd()
 
 const errors: TwoslashVerifyError[] = []
@@ -62,7 +62,7 @@ async function runForFile(transformer: ShikiTransformer, filepath: string) {
   console.log(`Checking ${relative(realCwd, filepath)} (${codeBlocks.length} twoslash blocks)`)
 
   for (const block of codeBlocks) {
-    currnetLine = block.position?.start?.line || 0
+    currentLine = block.position?.start?.line || 0
     try {
       await codeToHast(block.value, {
         lang: block.lang as any,
@@ -84,6 +84,8 @@ async function runForFile(transformer: ShikiTransformer, filepath: string) {
 }
 
 export async function verify(options: VerifyOptions = {}) {
+  errors.length = 0
+
   const root = options.rootDir || process.cwd()
   const {
     resolveNuxt = existsSync(join(root, 'nuxt.config.js')) || existsSync(join(root, 'nuxt.config.ts')),
@@ -97,7 +99,7 @@ export async function verify(options: VerifyOptions = {}) {
     : undefined
 
   const twoslashOptions = {
-    includeNuxtTypes: true,
+    includeNuxtTypes: resolveNuxt,
     enableInDev: true,
     ...((nuxt?.options as any)?.twoslash || {}) as ModuleOptions,
   }
@@ -130,14 +132,14 @@ export async function verify(options: VerifyOptions = {}) {
       onShikiError: (error) => {
         errors.push({
           file: currentFile,
-          line: currnetLine,
+          line: currentLine,
           error,
         })
       },
       onTwoslashError: (error) => {
         errors.push({
           file: currentFile,
-          line: currnetLine,
+          line: currentLine,
           error,
         })
       },
@@ -200,24 +202,24 @@ function printErrors() {
   console.error(c.red(errors.map(e => `  - ${relative(realCwd, e.file)}:${e.line}`).join('\n')))
 }
 
-const cli = cac('nuxt-content-twoslash')
+export function runCLI() {
+  const cli = cac('nuxt-content-twoslash')
 
-cli.command('verify', 'Verify twoslash code blocks in markdown files')
-  .option('--build-dir <dir>', 'The build directory of the Nuxt project')
-  .option('--content-dir <dir>', 'The content directory of the Nuxt project')
-  .option('--root-dir <dir>', 'The root directory of the Nuxt project')
-  .option('--languages <langs>', 'Additional languages to load (comma-separated)')
-  .option('--resolve-nuxt', 'Resolve Nuxt project', { default: false })
-  .option('-w, --watch', 'Watch files', { default: false })
-  .action((args) => {
-    verify(args)
-  })
+  cli.command('verify', 'Verify twoslash code blocks in markdown files')
+    .option('--build-dir <dir>', 'The build directory of the Nuxt project')
+    .option('--content-dir <dir>', 'The content directory of the Nuxt project')
+    .option('--root-dir <dir>', 'The root directory of the Nuxt project')
+    .option('--languages <langs>', 'Additional languages to load (comma-separated)')
+    .option('--resolve-nuxt', 'Resolve Nuxt project', { default: false })
+    .option('-w, --watch', 'Watch files', { default: false })
+    .action((args) => verify(args))
 
-cli.command('')
-  .action(() => {
-    throw new Error('Unknown command, expected `verify` command.')
-  })
+  cli.command('')
+    .action(() => {
+      throw new Error('Unknown command, expected `verify` command.')
+    })
 
-cli
-  .help()
-  .parse()
+  cli
+    .help()
+    .parse()
+}

@@ -30,7 +30,8 @@
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt prepare playground",
     "release": "bumpp && pnpm publish",
     "lint": "eslint .",
-    "test": "nr test:e2e",
+    "test": "nr test:unit && nr test:e2e",
+    "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "typecheck": "nr dev:prepare && tsc --noEmit && cd playground && pnpm tsc --noEmit"
   },
@@ -65,7 +66,8 @@
     "bumpp": "^10.3.2",
     "eslint": "^9.39.2",
     "playwright-core": "^1.57.0",
-    "unbuild": "^3.6.1"
+    "unbuild": "^3.6.1",
+    "vitest": "^3.1.6"
   },
   "publishConfig": {
     "scripts": {},
