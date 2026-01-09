@@ -212,7 +212,7 @@ export function runCLI() {
     .option('--languages <langs>', 'Additional languages to load (comma-separated)')
     .option('--resolve-nuxt', 'Resolve Nuxt project', { default: false })
     .option('-w, --watch', 'Watch files', { default: false })
-    .action((args) => verify(args))
+    .action(args => verify(args))
 
   cli.command('')
     .action(() => {
