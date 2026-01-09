@@ -1,2 +1,4 @@
 #!/usr/bin/env node
-import('../dist/cli.mjs')
+import { runCLI } from '../dist/cli.mjs'
+
+runCLI()
