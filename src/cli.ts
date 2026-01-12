@@ -1,4 +1,3 @@
-import type { ModuleOptions } from '@nuxt/schema'
 import type { Code } from 'mdast'
 import type { BuiltinLanguage, ShikiTransformer } from 'shiki'
 import { existsSync } from 'node:fs'
@@ -14,7 +13,8 @@ import { codeToHast, getSingletonHighlighter } from 'shiki'
 import { unified } from 'unified'
 import { visit } from 'unist-util-visit'
 import { createTransformer } from './runtime/transformer'
-import { getNuxtCompilerOptions, getTypeDecorations } from './utils'
+import type { NuxtCompilerOptions } from './runtime/utils'
+import { getNuxtCompilerOptions, getTypeDecorations } from './runtime/utils'
 
 interface TwoslashVerifyError {
   file: string
@@ -99,16 +99,16 @@ export async function verify(options: VerifyOptions = {}) {
     : undefined
 
   const twoslashOptions = {
-    includeNuxtTypes: resolveNuxt,
+    includeNuxtTypes: true,
     enableInDev: true,
-    ...((nuxt?.options as any)?.twoslash || {}) as ModuleOptions,
+    ...(nuxt?.options?.twoslash || {}),
   }
 
   const buildDir = resolve(root, options.buildDir || nuxt?.options.buildDir || '.nuxt')
   const contentDir = resolve(root, options.contentDir || 'content')
 
   const typeDecorations: Record<string, string> = {}
-  let compilerOptions: any = {}
+  let compilerOptions: NuxtCompilerOptions | undefined
   if (twoslashOptions.includeNuxtTypes) {
     await getTypeDecorations(buildDir, typeDecorations)
     compilerOptions = await getNuxtCompilerOptions(buildDir)

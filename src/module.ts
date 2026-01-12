@@ -1,8 +1,9 @@
-import type {} from '@nuxt/schema'
+import type { } from '@nuxt/schema'
 import type { TwoslashFloatingVueOptions } from '@shikijs/vitepress-twoslash'
 import type { TwoslashOptions } from 'twoslash'
+import type { NuxtCompilerOptions } from './runtime/utils'
 import { addPlugin, addTemplate, createResolver, defineNuxtModule } from '@nuxt/kit'
-import { getNuxtCompilerOptions, getTypeDecorations } from './utils'
+import { getNuxtCompilerOptions, getTypeDecorations } from './runtime/utils'
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {
@@ -57,7 +58,7 @@ export default defineNuxtModule<ModuleOptions>({
     addPlugin(resolver.resolve('./runtime/plugin'))
 
     const types: Record<string, string> = {}
-    let compilerOptions: Record<string, any> = {}
+    let compilerOptions: NuxtCompilerOptions = {}
 
     const path = addTemplate({
       filename: 'twoslash-meta.mjs',

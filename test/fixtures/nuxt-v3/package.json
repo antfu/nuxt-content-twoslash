@@ -1,0 +1,12 @@
+{
+  "name": "test-fixture-nuxt-v3",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "nuxt": "^3.14.1592"
+  }
+}

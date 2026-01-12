@@ -11,3 +11,5 @@ trustPolicyExclude:
 
 packages:
   - playground
+  - test/fixtures/nuxt-v3
+  - test/fixtures/nuxt-v4
