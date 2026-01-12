@@ -50,9 +50,7 @@ async function parseTsConfig(path: string, dir: string): Promise<TsConfigWithPat
     const json = ts.convertCompilerOptionsFromJson(config.compilerOptions, dir, '').options
 
     Object.entries(json.paths || {}).forEach(([key, value]) => {
-        json.paths![key] = value.map((v: string) => `./${relative(dirname(dir), resolve(dir, v))}`)
-      if (key === '#imports')
-        json.paths![key] = ['./.nuxt/imports.d.ts']
+      json.paths![key] = value.map((v: string) => `./${relative(dirname(dir), resolve(dir, v))}`)
     })
 
     return {
@@ -132,7 +130,31 @@ export function detectTsConfigContext(meta?: string, configs?: NuxtCompilerOptio
 }
 
 /**
- * Check if a filename matches the include/exclude glob patterns
+ * Normalize tsconfig patterns from being relative to .nuxt to being relative to project root.
+ * The tsconfig files in .nuxt use patterns like "../nuxt.config.*" or "../server/**".
+ * We need to convert these to patterns that match user-provided filenames like "nuxt.config.ts" or "server/api/hello.ts".
+ */
+function normalizePattern(pattern: string): string {
+  // Remove leading "./" or "../" prefixes
+  // "../nuxt.config.*" => "nuxt.config.*"
+  // "../server/**/*" => "server/**/*"
+  // "./nuxt.d.ts" => "nuxt.d.ts"
+  return pattern.replace(/^\.\.?\//, '')
+}
+
+/**
+ * Check if a pattern is too broad to be useful for context detection.
+ * These patterns match almost everything and shouldn't be used for determining context.
+ */
+function isCatchAllPattern(pattern: string): boolean {
+  const normalized = normalizePattern(pattern)
+  // Skip patterns like "**/*", "*", "**", etc.
+  return /^\*+\/?(\*+)?$/.test(normalized)
+}
+
+/**
+ * Check if a filename matches the include/exclude glob patterns.
+ * Patterns are normalized from tsconfig paths (relative to .nuxt) to project root.
  */
 function matchesGlobPatterns(
   filename?: string,
@@ -143,8 +165,18 @@ function matchesGlobPatterns(
     return false
   }
 
+  // Normalize the patterns to be relative to project root and filter out catch-all patterns
+  const normalizedInclude = include
+    .filter(p => !isCatchAllPattern(p))
+    .map(normalizePattern)
+  const normalizedExclude = exclude?.map(normalizePattern)
+
+  if (normalizedInclude.length === 0) {
+    return false
+  }
+
   // we use `minimatch` as it is also used internally by `typescript`
-  const matchesInclude = include.some(pattern =>
+  const matchesInclude = normalizedInclude.some(pattern =>
     minimatch(filename, pattern, { dot: true }),
   )
 
@@ -153,8 +185,8 @@ function matchesGlobPatterns(
   }
 
   // Check exclude patterns
-  if (exclude && exclude.length > 0) {
-    const matchesExclude = exclude.some(pattern =>
+  if (normalizedExclude && normalizedExclude.length > 0) {
+    const matchesExclude = normalizedExclude.some(pattern =>
       minimatch(filename, pattern, { dot: true }),
     )
     if (matchesExclude) {

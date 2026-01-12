@@ -182,6 +182,7 @@ describe('cli - verify command', () => {
     expect(result.exitCode).not.toBe(1)
     expect(result.logs).toContain('Resolving Nuxt...')
     expect(result.logs).toContain('playground/content/index.md')
+    expect(result.logs).toContain('Twoslash verification passed')
   }, 30000)
 
   it('should fail without Nuxt types when auto-imports are used', async () => {

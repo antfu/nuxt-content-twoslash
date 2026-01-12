@@ -98,14 +98,20 @@ export async function verify(options: VerifyOptions = {}) {
     ? await loadNuxt({ ready: true, cwd: root })
     : undefined
 
+  // Use the explicit buildDir option, or fallback to .nuxt
+  // We don't use nuxt.options.buildDir because loadNuxt may point to a cache directory
+  // without the generated type files (those are in the main .nuxt directory from nuxi prepare/build)
+  const buildDir = resolve(root, options.buildDir || '.nuxt')
+  const contentDir = resolve(root, options.contentDir || 'content')
+
+  // Only include Nuxt types if the .nuxt directory exists
+  const hasNuxtTypes = existsSync(buildDir) && existsSync(join(buildDir, 'nuxt.d.ts'))
+
   const twoslashOptions = {
-    includeNuxtTypes: true,
+    includeNuxtTypes: hasNuxtTypes,
     enableInDev: true,
     ...(nuxt?.options?.twoslash || {}),
   }
-
-  const buildDir = resolve(root, options.buildDir || nuxt?.options.buildDir || '.nuxt')
-  const contentDir = resolve(root, options.contentDir || 'content')
 
   const typeDecorations: Record<string, string> = {}
   let compilerOptions: NuxtCompilerOptions | undefined
