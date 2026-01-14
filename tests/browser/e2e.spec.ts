@@ -16,9 +16,7 @@ test('renders code blocks with syntax highlighting', async ({ page, goto }) => {
   expect(computedColor).not.toBe('rgb(0, 0, 0)')
 })
 
-test('displays TypeScript type information on hover', async ({ page, goto }, testInfo) => {
-  test.fail(testInfo.project.name === 'content-v3', 'nuxt-content-twoslash is not yet compatible with Content v3')
-
+test('displays TypeScript type information on hover', async ({ page, goto }) => {
   await goto('/', { waitUntil: 'hydration' })
 
   const typePopupText = page.getByText(/const definePageMeta.*PageMeta.*void/i)
