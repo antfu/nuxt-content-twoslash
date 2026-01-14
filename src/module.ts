@@ -1,9 +1,9 @@
-import type {} from '@nuxt/schema'
+import type { NuxtTemplate } from '@nuxt/schema'
 import type { TwoslashFloatingVueOptions } from '@shikijs/vitepress-twoslash'
 import type { TwoslashOptions } from 'twoslash'
 import { mkdirSync, writeFileSync } from 'node:fs'
-import { addPlugin, addTemplate, createResolver, defineNuxtModule } from '@nuxt/kit'
-import { dirname, join } from 'pathe'
+import { addPlugin, addTemplate, createResolver, defineNuxtModule, normalizeTemplate } from '@nuxt/kit'
+import { dirname } from 'pathe'
 import { getNuxtCompilerOptions, getTypeDecorations } from './utils'
 
 // Module options TypeScript interface definition
@@ -60,26 +60,16 @@ export default defineNuxtModule<ModuleOptions>({
 
     const types: Record<string, string> = {}
     let compilerOptions: Record<string, any> = {}
-
-    const getMetaContent = () => [
-      `export const rootDir = ${JSON.stringify(nuxt.options.rootDir)};`,
-      `export const moduleOptions = ${JSON.stringify(options, null, 2)}`,
-      `/** @type { Record<string, string> } */`,
-      `export const typeDecorations = ${JSON.stringify(types, null, 2)}`,
-      `/** @type { Record<string, string> } */`,
-      `export const compilerOptions = ${JSON.stringify(compilerOptions, null, 2)}`,
-    ].join('\n')
-
-    // Write twoslash-meta.mjs immediately - Content v3's jiti needs it when importing mdc config
-    const twoslashMetaPath = join(nuxt.options.buildDir, 'twoslash-meta.mjs')
-    mkdirSync(dirname(twoslashMetaPath), { recursive: true })
-    writeFileSync(twoslashMetaPath, getMetaContent())
-
-    // Also register as template for Nuxt's type generation
-    const path = addTemplate({
+    const path = addSyncNuxtTemplate({
       filename: 'twoslash-meta.mjs',
-      write: true,
-      getContents: getMetaContent,
+      getContents: () => [
+        `export const rootDir = ${JSON.stringify(nuxt.options.rootDir)};`,
+        `export const moduleOptions = ${JSON.stringify(options, null, 2)}`,
+        `/** @type { Record<string, string> } */`,
+        `export const typeDecorations = ${JSON.stringify(types, null, 2)}`,
+        `/** @type { Record<string, string> } */`,
+        `export const compilerOptions = ${JSON.stringify(compilerOptions, null, 2)}`,
+      ].join('\n'),
     })
     nuxt.options.alias ||= {}
     nuxt.options.alias['#twoslash-meta'] = path.dst
@@ -134,20 +124,13 @@ export default defineConfig({
   },
 })
 `
-    const mdcConfigPath = join(nuxt.options.buildDir, 'twoslash-mdc.config.mjs')
-    mkdirSync(dirname(mdcConfigPath), { recursive: true })
-    writeFileSync(mdcConfigPath, mdcConfigContent)
-
-    addTemplate({
+    const mdcConfig = addSyncNuxtTemplate({
       filename: 'twoslash-mdc.config.mjs',
-      write: true,
       getContents: () => mdcConfigContent,
     })
 
-    // eslint-disable-next-line ts/ban-ts-comment
-    // @ts-ignore
-    nuxt.hook('mdc:configSources', async (sources: string[]) => {
-      sources.push(mdcConfigPath)
+    nuxt.hook('mdc:configSources', (sources) => {
+      sources.push(mdcConfig.dst)
       isHookCalled = true
     })
 
@@ -168,3 +151,16 @@ export default defineConfig({
     })
   },
 })
+
+// Write templates to disk immediately as content v3 need it when importing mdc config in node/build context
+function addSyncNuxtTemplate(_template: Partial<Omit<NuxtTemplate, 'getContents'>> & { getContents: () => string }) {
+  const template = normalizeTemplate({
+    ..._template,
+    write: true,
+  })
+
+  mkdirSync(dirname(template.dst), { recursive: true })
+  writeFileSync(template.dst, _template.getContents())
+
+  return addTemplate(template)
+}
