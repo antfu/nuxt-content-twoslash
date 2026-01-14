@@ -164,7 +164,7 @@ describe('cli - verify command', () => {
 
     const result = await runVerify({
       contentDir: tempDir,
-      rootDir: join(process.cwd(), 'playground'),
+      rootDir: join(process.cwd(), 'test', 'fixtures', 'content-v2'),
       resolveNuxt: true,
     })
 
@@ -172,16 +172,28 @@ describe('cli - verify command', () => {
     expect(result.logs).toContain('Resolving Nuxt...')
   }, 30000)
 
-  it('should verify playground content with Nuxt types', async () => {
+  it('should verify content-v2 fixture with Nuxt types', async () => {
     const result = await runVerify({
-      contentDir: join(process.cwd(), 'playground', 'content'),
-      rootDir: join(process.cwd(), 'playground'),
+      contentDir: join(process.cwd(), 'test', 'fixtures', 'content-v2', 'content'),
+      rootDir: join(process.cwd(), 'test', 'fixtures', 'content-v2'),
       resolveNuxt: true,
     })
 
     expect(result.exitCode).not.toBe(1)
     expect(result.logs).toContain('Resolving Nuxt...')
-    expect(result.logs).toContain('playground/content/index.md')
+    expect(result.logs).toContain('content-v2/content/index.md')
+  }, 30000)
+
+  it('should verify content-v3 fixture with Nuxt types', async () => {
+    const result = await runVerify({
+      contentDir: join(process.cwd(), 'test', 'fixtures', 'content-v3', 'content'),
+      rootDir: join(process.cwd(), 'test', 'fixtures', 'content-v3'),
+      resolveNuxt: true,
+    })
+
+    expect(result.exitCode).not.toBe(1)
+    expect(result.logs).toContain('Resolving Nuxt...')
+    expect(result.logs).toContain('content-v3/content/index.md')
   }, 30000)
 
   it('should fail without Nuxt types when auto-imports are used', async () => {
