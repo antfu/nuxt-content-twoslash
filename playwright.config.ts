@@ -5,21 +5,32 @@ import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig<ConfigOptions>({
   testDir: './tests/browser',
-  fullyParallel: true,
+  fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
     trace: 'on-first-retry',
-    nuxt: {
-      rootDir: fileURLToPath(new URL('./playground', import.meta.url)),
-    },
   },
   projects: [
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      name: 'content-v2',
+      use: {
+        ...devices['Desktop Chrome'],
+        nuxt: {
+          rootDir: fileURLToPath(new URL('./test/fixtures/content-v2', import.meta.url)),
+        },
+      },
+    },
+    {
+      name: 'content-v3',
+      use: {
+        ...devices['Desktop Chrome'],
+        nuxt: {
+          rootDir: fileURLToPath(new URL('./test/fixtures/content-v3', import.meta.url)),
+        },
+      },
     },
   ],
 })

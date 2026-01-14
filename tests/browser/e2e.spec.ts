@@ -1,36 +1,36 @@
 import { expect, test } from '@nuxt/test-utils/playwright'
 
-test.describe('nuxt-content-twoslash', () => {
-  test('renders code blocks with syntax highlighting', async ({ page, goto }) => {
-    await goto('/', { waitUntil: 'hydration' })
+test('renders code blocks with syntax highlighting', async ({ page, goto }) => {
+  await goto('/', { waitUntil: 'hydration' })
 
-    await expect(page.getByText('console.log(\'Hello, world!\')')).toBeVisible()
+  await expect(page.getByText('console.log(\'Hello, world!\')')).toBeVisible()
 
-    const firstCodeBlock = page.locator('pre').first().locator('code')
-    const consoleToken = firstCodeBlock.getByText('console', { exact: true })
-    await expect(consoleToken).toBeVisible()
+  const firstCodeBlock = page.locator('pre').first().locator('code')
+  const consoleToken = firstCodeBlock.getByText('console', { exact: true })
+  await expect(consoleToken).toBeVisible()
 
-    const computedColor = await consoleToken.evaluate((el) => {
-      return window.getComputedStyle(el).color
-    })
-
-    expect(computedColor).not.toBe('rgb(0, 0, 0)')
+  const computedColor = await consoleToken.evaluate((el) => {
+    return window.getComputedStyle(el).color
   })
 
-  test('displays TypeScript type information on hover', async ({ page, goto }) => {
-    await goto('/', { waitUntil: 'hydration' })
+  expect(computedColor).not.toBe('rgb(0, 0, 0)')
+})
 
-    const typePopupText = page.getByText(/const definePageMeta.*PageMeta.*void/i)
+test('displays TypeScript type information on hover', async ({ page, goto }, testInfo) => {
+  test.fail(testInfo.project.name === 'content-v3', 'nuxt-content-twoslash is not yet compatible with Content v3')
 
-    await expect(typePopupText).not.toBeVisible()
+  await goto('/', { waitUntil: 'hydration' })
 
-    const codeBlock = page.locator('pre').filter({ hasText: 'definePageMeta' })
-    const definePageMetaText = codeBlock.getByText('definePageMeta').first()
-    await definePageMetaText.hover()
+  const typePopupText = page.getByText(/const definePageMeta.*PageMeta.*void/i)
 
-    await expect(typePopupText).toBeVisible()
+  await expect(typePopupText).not.toBeVisible()
 
-    const popupContent = await typePopupText.textContent()
-    expect(popupContent).toBe('const definePageMeta: (meta: PageMeta) => void')
-  })
+  const codeBlock = page.locator('pre').filter({ hasText: 'definePageMeta' })
+  const definePageMetaText = codeBlock.getByText('definePageMeta').first()
+  await definePageMetaText.hover()
+
+  await expect(typePopupText).toBeVisible()
+
+  const popupContent = await typePopupText.textContent()
+  expect(popupContent).toBe('const definePageMeta: (meta: PageMeta) => void')
 })
