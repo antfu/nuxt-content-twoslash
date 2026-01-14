@@ -9,8 +9,8 @@
   "exports": {
     ".": "./dist/module.mjs",
     "./runtime/transformer": {
-      "import": "./dist/runtime/transformer.js",
-      "types": "./dist/runtime/transformer.d.ts"
+      "types": "./dist/runtime/transformer.d.ts",
+      "import": "./dist/runtime/transformer.js"
     }
   },
   "main": "./dist/module.mjs",

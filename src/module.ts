@@ -2,8 +2,8 @@ import type {} from '@nuxt/schema'
 import type { TwoslashFloatingVueOptions } from '@shikijs/vitepress-twoslash'
 import type { TwoslashOptions } from 'twoslash'
 import { mkdirSync, writeFileSync } from 'node:fs'
-import { dirname, join } from 'pathe'
 import { addPlugin, addTemplate, createResolver, defineNuxtModule } from '@nuxt/kit'
+import { dirname, join } from 'pathe'
 import { getNuxtCompilerOptions, getTypeDecorations } from './utils'
 
 // Module options TypeScript interface definition
