@@ -138,6 +138,12 @@ export default defineConfig({
     mkdirSync(dirname(mdcConfigPath), { recursive: true })
     writeFileSync(mdcConfigPath, mdcConfigContent)
 
+    addTemplate({
+      filename: 'twoslash-mdc.config.mjs',
+      write: true,
+      getContents: () => mdcConfigContent,
+    })
+
     // eslint-disable-next-line ts/ban-ts-comment
     // @ts-ignore
     nuxt.hook('mdc:configSources', async (sources: string[]) => {
