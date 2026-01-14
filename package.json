@@ -8,10 +8,7 @@
   "repository": "antfu/nuxt-content-twoslash",
   "exports": {
     ".": "./dist/module.mjs",
-    "./runtime/transformer": {
-      "types": "./dist/runtime/transformer.d.ts",
-      "import": "./dist/runtime/transformer.js"
-    }
+    "./runtime/transformer": "./dist/runtime/transformer.js"
   },
   "main": "./dist/module.mjs",
   "typesVersions": {
