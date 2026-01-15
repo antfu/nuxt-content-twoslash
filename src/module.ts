@@ -1,7 +1,7 @@
 import type { NuxtTemplate } from '@nuxt/schema'
 import type { TwoslashFloatingVueOptions } from '@shikijs/vitepress-twoslash'
 import type { TwoslashOptions } from 'twoslash'
-import { mkdirSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { addPlugin, addTemplate, createResolver, defineNuxtModule, normalizeTemplate } from '@nuxt/kit'
 import { dirname } from 'pathe'
 import { getNuxtCompilerOptions, getTypeDecorations } from './utils'
@@ -78,52 +78,9 @@ export default defineNuxtModule<ModuleOptions>({
 
     let isHookCalled = false
 
-    // Generate mdc config for Content v3 compatibility
-    // Content v3 runs parsing in Node.js where import.meta.server is undefined
+    // with content v3, this runs in a Node context where `import.meta.server` is undefined
     // and #aliases don't resolve through native ESM imports
-    const mdcConfigContent = `
-import { defineConfig } from '@nuxtjs/mdc/config'
-
-const fallback = async () => {
-  const { removeTwoslashNotations } = await import('twoslash/fallback')
-  return [{ name: 'twoslash:fallback', preprocess: (code) => removeTwoslashNotations(code) }]
-}
-
-export default defineConfig({
-  shiki: {
-    async setup(shiki) {
-      await shiki.loadLanguage(
-        import('shiki/langs/javascript.mjs'),
-        import('shiki/langs/typescript.mjs'),
-        import('shiki/langs/vue.mjs'),
-      )
-    },
-    transformers: async (_code, _lang, _theme, options) => {
-      if (typeof options.meta !== 'string' || !options.meta.match(/\\btwoslash\\b/))
-        return []
-
-      // Use typeof window instead of import.meta.server (works in Node.js)
-      if (typeof globalThis.window !== 'undefined')
-        return fallback()
-
-      try {
-        // Use relative import (both files in .nuxt/)
-        const { rootDir, typeDecorations, moduleOptions, compilerOptions } = await import('./twoslash-meta.mjs')
-
-        // Use process.env instead of import.meta.dev
-        if (process.env.NODE_ENV === 'development' && !moduleOptions.enableInDev)
-          return fallback()
-
-        const { createTransformer } = await import('nuxt-content-twoslash/runtime/transformer')
-        return [await createTransformer(rootDir, moduleOptions, typeDecorations, compilerOptions)]
-      } catch (e) {
-        console.warn('[nuxt-content-twoslash] Failed:', e instanceof Error ? e.message : e)
-        return fallback()
-      }
-    },
-  },
-})
-`
+    const mdcConfigContent = readFileSync(resolver.resolve('./runtime/mdc-config.js'), 'utf-8')
     const mdcConfig = addSyncNuxtTemplate({
       filename: 'twoslash-mdc.config.mjs',
       getContents: () => mdcConfigContent,
