@@ -1,7 +1,9 @@
-import type {} from '@nuxt/schema'
+import type { NuxtTemplate } from '@nuxt/schema'
 import type { TwoslashFloatingVueOptions } from '@shikijs/vitepress-twoslash'
 import type { TwoslashOptions } from 'twoslash'
-import { addPlugin, addTemplate, createResolver, defineNuxtModule } from '@nuxt/kit'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { addPlugin, addTemplate, createResolver, defineNuxtModule, normalizeTemplate } from '@nuxt/kit'
+import { dirname } from 'pathe'
 import { getNuxtCompilerOptions, getTypeDecorations } from './utils'
 
 // Module options TypeScript interface definition
@@ -58,20 +60,16 @@ export default defineNuxtModule<ModuleOptions>({
 
     const types: Record<string, string> = {}
     let compilerOptions: Record<string, any> = {}
-
-    const path = addTemplate({
+    const path = addSyncNuxtTemplate({
       filename: 'twoslash-meta.mjs',
-      write: true,
-      getContents: () => {
-        return [
-          `export const rootDir = ${JSON.stringify(nuxt.options.rootDir)};`,
-          `export const moduleOptions = ${JSON.stringify(options, null, 2)}`,
-          `/** @type { Record<string, string> } */`,
-          `export const typeDecorations = ${JSON.stringify(types, null, 2)}`,
-          `/** @type { Record<string, string> } */`,
-          `export const compilerOptions = ${JSON.stringify(compilerOptions, null, 2)}`,
-        ].join('\n')
-      },
+      getContents: () => [
+        `export const rootDir = ${JSON.stringify(nuxt.options.rootDir)};`,
+        `export const moduleOptions = ${JSON.stringify(options, null, 2)}`,
+        `/** @type { Record<string, string> } */`,
+        `export const typeDecorations = ${JSON.stringify(types, null, 2)}`,
+        `/** @type { Record<string, string> } */`,
+        `export const compilerOptions = ${JSON.stringify(compilerOptions, null, 2)}`,
+      ].join('\n'),
     })
     nuxt.options.alias ||= {}
     nuxt.options.alias['#twoslash-meta'] = path.dst
@@ -80,10 +78,16 @@ export default defineNuxtModule<ModuleOptions>({
 
     let isHookCalled = false
 
-    // eslint-disable-next-line ts/ban-ts-comment
-    // @ts-ignore
-    nuxt.hook('mdc:configSources', async (sources: string[]) => {
-      sources.push(resolver.resolve('./runtime/mdc.config'))
+    // with content v3, this runs in a Node context where `import.meta.server` is undefined
+    // and #aliases don't resolve through native ESM imports
+    const mdcConfigContent = readFileSync(resolver.resolve('./runtime/mdc-config.js'), 'utf-8')
+    const mdcConfig = addSyncNuxtTemplate({
+      filename: 'twoslash-mdc.config.mjs',
+      getContents: () => mdcConfigContent,
+    })
+
+    nuxt.hook('mdc:configSources', (sources) => {
+      sources.push(mdcConfig.dst)
       isHookCalled = true
     })
 
@@ -104,3 +108,16 @@ export default defineNuxtModule<ModuleOptions>({
     })
   },
 })
+
+// Write templates to disk immediately as content v3 need it when importing mdc config in node/build context
+function addSyncNuxtTemplate(_template: Partial<Omit<NuxtTemplate, 'getContents'>> & { getContents: () => string }) {
+  const template = normalizeTemplate({
+    ..._template,
+    write: true,
+  })
+
+  mkdirSync(dirname(template.dst), { recursive: true })
+  writeFileSync(template.dst, _template.getContents())
+
+  return addTemplate(template)
+}

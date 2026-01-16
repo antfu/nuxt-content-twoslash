@@ -1,15 +1,27 @@
-import type { VitePressPluginTwoslashOptions } from '@shikijs/vitepress-twoslash'
-import type { ModuleOptions } from 'nuxt-content-twoslash'
-import type { ShikiTransformer } from 'shiki/core'
 import { join } from 'pathe'
 
+/**
+ * @typedef {import('@shikijs/vitepress-twoslash').VitePressPluginTwoslashOptions} VitePressPluginTwoslashOptions
+ * @typedef {import('nuxt-content-twoslash').ModuleOptions} ModuleOptions
+ * @typedef {import('shiki/core').ShikiTransformer} ShikiTransformer
+ */
+
+/**
+ * Create a twoslash transformer for shiki
+ * @param {string} rootDir
+ * @param {ModuleOptions} moduleOptions
+ * @param {Record<string, string>} typeDecorations
+ * @param {Record<string, any>} [compilerOptions]
+ * @param {VitePressPluginTwoslashOptions} [extraOptions]
+ * @returns {Promise<ShikiTransformer>}
+ */
 export async function createTransformer(
-  rootDir: string,
-  moduleOptions: ModuleOptions,
-  typeDecorations: Record<string, string>,
-  compilerOptions?: Record<string, any>,
-  extraOptions?: VitePressPluginTwoslashOptions,
-): Promise<ShikiTransformer> {
+  rootDir,
+  moduleOptions,
+  typeDecorations,
+  compilerOptions,
+  extraOptions,
+) {
   const prepend = [
     `/// <reference path="${join(rootDir, '.nuxt/nuxt.d.ts')}" />`,
     '',
