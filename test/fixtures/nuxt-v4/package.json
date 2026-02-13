@@ -1,0 +1,19 @@
+{
+  "name": "nuxt-content-twoslash-fixture-nuxt-v4",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "generate": "nuxt generate",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@nuxt/content": "^3.7.0",
+    "nuxt": "^4.3.1",
+    "nuxt-content-twoslash": "workspace:*"
+  },
+  "devDependencies": {
+    "vue-tsc": "^3.2.2"
+  }
+}
