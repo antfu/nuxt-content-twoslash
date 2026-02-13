@@ -196,6 +196,18 @@ describe('cli - verify command', () => {
     expect(result.logs).toContain('content-v3/content/index.md')
   }, 30000)
 
+  it.fails('should verify nuxt-v4 fixture with Nuxt types', async () => {
+    const result = await runVerify({
+      contentDir: join(process.cwd(), 'test', 'fixtures', 'nuxt-v4', 'content'),
+      rootDir: join(process.cwd(), 'test', 'fixtures', 'nuxt-v4'),
+      resolveNuxt: true,
+    })
+
+    expect(result.exitCode).not.toBe(1)
+    expect(result.logs).toContain('Resolving Nuxt...')
+    expect(result.logs).toContain('nuxt-v4/content/index.md')
+  }, 30000)
+
   it('should fail without Nuxt types when auto-imports are used', async () => {
     const tempDir = await createTempDir('temp-no-nuxt')
     await copyFixture('nuxt-imports.md', tempDir)
