@@ -5,9 +5,16 @@ shamefullyHoist: true
 shellEmulator: true
 
 trustPolicy: no-downgrade
+
 trustPolicyExclude:
   - chokidar@4.0.3
   - semver@6.3.1
-
 packages:
   - test/fixtures/*
+
+overrides:
+  '@nuxtjs/mdc': 0.20.1
+
+ignoredBuiltDependencies:
+  - esbuild
+  - vue-demi
