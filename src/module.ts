@@ -73,7 +73,10 @@ export default defineNuxtModule<ModuleOptions>({
     })
     nuxt.options.alias ||= {}
     nuxt.options.alias['#twoslash-meta'] = path.dst
+    // TODO: this is a regression and should be fixed in the next Nuxt version
+    // @ts-expect-error nitro property exists at runtime
     nuxt.options.nitro.alias ||= {}
+    // @ts-expect-error nitro property exists at runtime
     nuxt.options.nitro.alias['#twoslash-meta'] = path.dst
 
     let isHookCalled = false
