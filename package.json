@@ -27,7 +27,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "nuxt-module-build build",
+    "build": "nr dev:prepare && nuxt-module-build build",
     "prepack": "pnpm run build",
     "dev": "nuxt dev test/fixtures/content-v2",
     "dev:v3": "nuxt dev test/fixtures/content-v3",
