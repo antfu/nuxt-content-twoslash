@@ -1,7 +1,7 @@
 {
   "name": "nuxt-content-twoslash",
   "type": "module",
-  "version": "0.1.2",
+  "version": "0.2.1",
   "packageManager": "pnpm@10.29.3",
   "description": "Enable TwoSlash for Nuxt Content",
   "license": "MIT",
@@ -27,7 +27,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "nuxt-module-build build",
+    "build": "nr dev:prepare && nuxt-module-build build",
     "prepack": "pnpm run build",
     "dev": "nuxt dev test/fixtures/content-v3",
     "dev:build": "nuxt build test/fixtures/content-v3",
