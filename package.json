@@ -32,7 +32,7 @@
     "dev": "nuxt dev test/fixtures/content-v3",
     "dev:build": "nuxt build test/fixtures/content-v3",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt prepare test/fixtures/content-v3 && nuxt prepare test/fixtures/nuxt-v4",
-    "release": "bumpp && pnpm publish",
+    "release": "bumpp",
     "lint": "eslint .",
     "test": "nr test:unit && nr test:e2e",
     "test:unit": "vitest run",
