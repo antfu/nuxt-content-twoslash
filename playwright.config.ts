@@ -15,15 +15,6 @@ export default defineConfig<ConfigOptions>({
   },
   projects: [
     {
-      name: 'content-v2',
-      use: {
-        ...devices['Desktop Chrome'],
-        nuxt: {
-          rootDir: fileURLToPath(new URL('./test/fixtures/content-v2', import.meta.url)),
-        },
-      },
-    },
-    {
       name: 'content-v3',
       use: {
         ...devices['Desktop Chrome'],
