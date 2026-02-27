@@ -13,9 +13,6 @@ trustPolicyExclude:
 packages:
   - test/fixtures/*
 
-overrides:
-  '@nuxtjs/mdc': 0.20.1
-
 ignoredBuiltDependencies:
   - esbuild
   - vue-demi

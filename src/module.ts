@@ -2,7 +2,7 @@ import type { NuxtTemplate } from '@nuxt/schema'
 import type { TwoslashFloatingVueOptions } from '@shikijs/vitepress-twoslash'
 import type { TwoslashOptions } from 'twoslash'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { addPlugin, addTemplate, createResolver, defineNuxtModule, normalizeTemplate } from '@nuxt/kit'
+import { addPlugin, addTemplate, createResolver, defineNuxtModule, installModule, normalizeTemplate } from '@nuxt/kit'
 import { dirname } from 'pathe'
 import { getNuxtCompilerOptions, getTypeDecorations } from './utils'
 
@@ -54,9 +54,12 @@ export default defineNuxtModule<ModuleOptions>({
     includeNuxtTypes: true,
     enableInDev: true,
   },
-  setup(options, nuxt) {
+  async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
     addPlugin(resolver.resolve('./runtime/plugin'))
+
+    // TODO: workaround until https://github.com/nuxt/content/pull/3736 lands
+    await installModule('@nuxtjs/mdc')
 
     const types: Record<string, string> = {}
     let compilerOptions: Record<string, any> = {}
