@@ -184,7 +184,7 @@ describe('cli - verify command', () => {
     expect(result.logs).toContain('content-v3/content/index.md')
   }, 30000)
 
-  it.fails('should verify nuxt-v4 fixture with Nuxt types', async () => {
+  it('should verify nuxt-v4 fixture with Nuxt types', async () => {
     const result = await runVerify({
       contentDir: join(process.cwd(), 'test', 'fixtures', 'nuxt-v4', 'content'),
       rootDir: join(process.cwd(), 'test', 'fixtures', 'nuxt-v4'),

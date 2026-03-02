@@ -29,6 +29,9 @@ importers:
       pathe:
         specifier: ^2.0.3
         version: 2.0.3
+      picomatch:
+        specifier: ^4.0.3
+        version: 4.0.3
       remark-parse:
         specifier: ^11.0.0
         version: 11.0.0
@@ -75,12 +78,18 @@ importers:
       '@types/node':
         specifier: ^24.10.13
         version: 24.10.13
+      '@types/picomatch':
+        specifier: ^4.0.2
+        version: 4.0.2
       bumpp:
         specifier: ^10.4.1
         version: 10.4.1(magicast@0.5.1)
       eslint:
         specifier: ^9.39.2
         version: 9.39.2(jiti@2.6.1)
+      pkg-types:
+        specifier: ^2.3.0
+        version: 2.3.0
       playwright-core:
         specifier: ^1.58.2
         version: 1.58.2
@@ -1829,6 +1838,9 @@ packages:
   '@types/parse-path@7.1.0':
     resolution: {integrity: sha512-EULJ8LApcVEPbrfND0cRQqutIOdiIgJ1Mgrhpy755r14xMohPTEpkV/k28SJvuOs9bHRFW8x+KeDAEPiGQPB9Q==}
     deprecated: This is a stub types definition. parse-path provides its own type definitions, so you do not need this installed.
+
+  '@types/picomatch@4.0.2':
+    resolution: {integrity: sha512-qHHxQ+P9PysNEGbALT8f8YOSHW0KJu6l2xU8DYY0fu/EmGxXdVnuTLvFUvBgPJMSqXq29SYHveejeAha+4AYgA==}
 
   '@types/resolve@1.20.2':
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
@@ -7387,6 +7399,8 @@ snapshots:
   '@types/parse-path@7.1.0':
     dependencies:
       parse-path: 7.1.0
+
+  '@types/picomatch@4.0.2': {}
 
   '@types/resolve@1.20.2': {}
 
