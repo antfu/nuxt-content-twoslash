@@ -125,7 +125,7 @@ This module also provides a command-line interface to verify TwoSlash code snipp
 npx nuxt-content-twoslash verify
 ```
 
-The CLI fully supports Nuxt v4 project references -- when `--resolve-nuxt` is used (or a `nuxt.config` is detected), it automatically picks up the context-specific tsconfig files and validates each code block against the correct type environment.
+The CLI automatically detects Nuxt projects (by looking for `nuxt.config.ts` or `nuxt.config.js`) and resolves type information from your `.nuxt` build directory. It also fully supports Nuxt v4 project references, automatically picking up the context-specific tsconfig files and validating each code block against the correct type environment.
 
 > [!TIP]
 > An example usage is that in [nuxt/nuxt.com](https://github.com/nuxt/nuxt.com), we load the docs externally from [nuxt/nuxt](https://github.com/nuxt/nuxt) repository. This way it allows the docs to be closer to the source code and easier for contributors to update them in the same PR.

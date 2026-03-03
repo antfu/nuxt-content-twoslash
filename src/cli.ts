@@ -294,7 +294,7 @@ export function runCLI() {
     .option('--content-dir <dir>', 'The content directory of the Nuxt project')
     .option('--root-dir <dir>', 'The root directory of the Nuxt project')
     .option('--languages <langs>', 'Additional languages to load (comma-separated)')
-    .option('--resolve-nuxt', 'Resolve Nuxt project', { default: false })
+    .option('--resolve-nuxt', 'Resolve Nuxt project')
     .option('-w, --watch', 'Watch files', { default: false })
     .action(args => verify(args))
 
