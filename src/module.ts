@@ -1,10 +1,11 @@
 import type { NuxtTemplate } from '@nuxt/schema'
 import type { TwoslashFloatingVueOptions } from '@shikijs/vitepress-twoslash'
 import type { TwoslashOptions } from 'twoslash'
+import type { ContextConfig } from './utils'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { addPlugin, addTemplate, createResolver, defineNuxtModule, installModule, normalizeTemplate } from '@nuxt/kit'
 import { dirname } from 'pathe'
-import { getNuxtCompilerOptions, getTypeDecorations } from './utils'
+import { getNuxtCompilerOptions, getNuxtContextConfigs, getTypeDecorations, hasProjectReferences } from './utils'
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {
@@ -63,6 +64,8 @@ export default defineNuxtModule<ModuleOptions>({
 
     const types: Record<string, string> = {}
     let compilerOptions: Record<string, any> = {}
+    let projectReferences = false
+    let contextConfigs: Record<string, ContextConfig> = {}
     const path = addSyncNuxtTemplate({
       filename: 'twoslash-meta.mjs',
       getContents: () => [
@@ -72,6 +75,9 @@ export default defineNuxtModule<ModuleOptions>({
         `export const typeDecorations = ${JSON.stringify(types, null, 2)}`,
         `/** @type { Record<string, string> } */`,
         `export const compilerOptions = ${JSON.stringify(compilerOptions, null, 2)}`,
+        `export const hasProjectReferences = ${JSON.stringify(projectReferences)}`,
+        `/** @type { Record<string, { name: string, compilerOptions: Record<string, any>, referenceFile: string, include: string[], exclude: string[] }> } */`,
+        `export const contextConfigs = ${JSON.stringify(contextConfigs, null, 2)}`,
       ].join('\n'),
     })
     nuxt.options.alias ||= {}
@@ -96,11 +102,19 @@ export default defineNuxtModule<ModuleOptions>({
 
     if (options.includeNuxtTypes) {
       nuxt.hook('app:templatesGenerated', async () => {
+        const buildDir = nuxt.options.buildDir
+        projectReferences = hasProjectReferences(buildDir)
+
         await Promise.all([
-          getTypeDecorations(nuxt.options.buildDir, types),
-          getNuxtCompilerOptions(nuxt.options.buildDir).then((config) => {
+          getTypeDecorations(buildDir, types),
+          getNuxtCompilerOptions(buildDir).then((config) => {
             compilerOptions = config
           }),
+          projectReferences
+            ? getNuxtContextConfigs(buildDir).then((configs) => {
+                contextConfigs = configs
+              })
+            : Promise.resolve(),
         ])
       })
     }

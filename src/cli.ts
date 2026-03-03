@@ -13,8 +13,8 @@ import remarkParse from 'remark-parse'
 import { codeToHast, getSingletonHighlighter } from 'shiki'
 import { unified } from 'unified'
 import { visit } from 'unist-util-visit'
-import { createTransformer } from './runtime/transformer'
-import { getNuxtCompilerOptions, getTypeDecorations } from './utils'
+import { createContextTransformer, createTransformer } from './runtime/transformer'
+import { filterTypeDecorationsForContext, getNuxtCompilerOptions, getNuxtContextConfigs, getTypeDecorations, hasProjectReferences, parseFilenameFromMeta, resolveFileContext, stripFilenameFromMeta } from './utils'
 
 interface TwoslashVerifyError {
   file: string
@@ -37,7 +37,20 @@ const realCwd = process.cwd()
 
 const errors: TwoslashVerifyError[] = []
 
-async function runForFile(transformer: ShikiTransformer, filepath: string) {
+async function runForFile(
+  transformer: ShikiTransformer,
+  filepath: string,
+): Promise<void>
+async function runForFile(
+  transformer: Record<string, ShikiTransformer>,
+  filepath: string,
+  contextConfigs: Record<string, import('./utils').ContextConfig>,
+): Promise<void>
+async function runForFile(
+  transformer: ShikiTransformer | Record<string, ShikiTransformer>,
+  filepath: string,
+  contextConfigs?: Record<string, import('./utils').ContextConfig>,
+) {
   currentFile = filepath
   const content = await fs.readFile(filepath, 'utf-8')
 
@@ -61,15 +74,33 @@ async function runForFile(transformer: ShikiTransformer, filepath: string) {
 
   console.log(`Checking ${relative(realCwd, filepath)} (${codeBlocks.length} twoslash blocks)`)
 
+  const isMultiContext = !!contextConfigs
+
   for (const block of codeBlocks) {
     currentLine = block.position?.start?.line || 0
+
+    let selectedTransformer: ShikiTransformer
+    let meta = block.meta || ''
+
+    if (isMultiContext) {
+      const transformers = transformer as Record<string, ShikiTransformer>
+      const filename = parseFilenameFromMeta(meta)
+      const context = resolveFileContext(filename, contextConfigs!)
+      selectedTransformer = transformers[context || 'default'] || transformers.default
+      // Strip the [filename] from meta so twoslash doesn't see it
+      meta = stripFilenameFromMeta(meta)
+    }
+    else {
+      selectedTransformer = transformer as ShikiTransformer
+    }
+
     try {
       await codeToHast(block.value, {
-        lang: block.lang as any,
+        lang: block.lang!,
         theme: 'min-dark',
-        transformers: [transformer],
+        transformers: [selectedTransformer],
         meta: {
-          __raw: block.meta as any,
+          __raw: meta,
         },
       })
     }
@@ -104,7 +135,12 @@ export async function verify(options: VerifyOptions = {}) {
     ...((nuxt?.options as any)?.twoslash || {}) as ModuleOptions,
   }
 
-  const buildDir = resolve(root, options.buildDir || nuxt?.options.buildDir || '.nuxt')
+  let buildDir = resolve(root, options.buildDir || nuxt?.options.buildDir || '.nuxt')
+  // Nuxt 4 may report a cache path as buildDir that doesn't contain prepared types.
+  // Fall back to the standard .nuxt/ directory if the reported path lacks a tsconfig.
+  if (!existsSync(join(buildDir, 'tsconfig.json')) && existsSync(join(root, '.nuxt', 'tsconfig.json'))) {
+    buildDir = join(root, '.nuxt')
+  }
   const contentDir = resolve(root, options.contentDir || 'content')
 
   const typeDecorations: Record<string, string> = {}
@@ -113,6 +149,73 @@ export async function verify(options: VerifyOptions = {}) {
     await getTypeDecorations(buildDir, typeDecorations)
     compilerOptions = await getNuxtCompilerOptions(buildDir)
   }
+
+  const errorHandlers = {
+    onShikiError: (error: any) => {
+      errors.push({
+        file: currentFile,
+        line: currentLine,
+        error,
+      })
+    },
+    onTwoslashError: (error: any) => {
+      errors.push({
+        file: currentFile,
+        line: currentLine,
+        error,
+      })
+    },
+  }
+
+  // Check for Nuxt v4 project references
+  const useProjectReferences = twoslashOptions.includeNuxtTypes && hasProjectReferences(buildDir)
+  let contextConfigs: Record<string, import('./utils').ContextConfig> | undefined
+  let contextTransformers: Record<string, ShikiTransformer> | undefined
+  let singleTransformer: ShikiTransformer | undefined
+
+  if (useProjectReferences) {
+    contextConfigs = await getNuxtContextConfigs(buildDir)
+    contextTransformers = {}
+
+    // Create a transformer for each context with filtered type decorations
+    await Promise.all(
+      Object.entries(contextConfigs).map(async ([name, config]) => {
+        const filteredDecorations = filterTypeDecorationsForContext(typeDecorations, config)
+        contextTransformers![name] = await createContextTransformer(
+          root,
+          twoslashOptions,
+          filteredDecorations,
+          config,
+          errorHandlers,
+        )
+      }),
+    )
+
+    // Create a fallback transformer using legacy tsconfig.json (all decorations)
+    contextTransformers.default = await createTransformer(
+      root,
+      twoslashOptions,
+      typeDecorations,
+      compilerOptions,
+      errorHandlers,
+    )
+  }
+  else {
+    singleTransformer = await createTransformer(
+      root,
+      twoslashOptions,
+      typeDecorations,
+      compilerOptions,
+      errorHandlers,
+    )
+  }
+
+  const additionalLanguages = options.languages?.split(',').map(l => l.trim()) || []
+  const highlighter = await getSingletonHighlighter()
+  await Promise.all([
+    highlighter.loadLanguage('js'),
+    ...additionalLanguages.map(lang => highlighter.loadLanguage(lang as BuiltinLanguage)),
+  ])
 
   const markdownFiles = await fg('**/*.md', {
     ignore: ['**/node_modules/**', '**/dist/**'],
@@ -123,42 +226,18 @@ export async function verify(options: VerifyOptions = {}) {
     followSymbolicLinks: false,
   })
 
-  const transformer = await createTransformer(
-    root,
-    twoslashOptions,
-    typeDecorations,
-    compilerOptions,
-    {
-      onShikiError: (error) => {
-        errors.push({
-          file: currentFile,
-          line: currentLine,
-          error,
-        })
-      },
-      onTwoslashError: (error) => {
-        errors.push({
-          file: currentFile,
-          line: currentLine,
-          error,
-        })
-      },
-    },
-  )
-
-  const additionalLanguages = options.languages?.split(',').map(l => l.trim()) || []
-  const highlighter = await getSingletonHighlighter()
-  await Promise.all([
-    highlighter.loadLanguage('js'),
-    ...additionalLanguages.map(lang => highlighter.loadLanguage(lang as BuiltinLanguage)),
-  ])
-
   console.log('Verifying Twoslash in', markdownFiles.length, 'files...')
   console.log(markdownFiles.map(f => `  - ${relative(realCwd, f)}`).join('\n'))
   console.log('')
 
-  for (const path of markdownFiles)
-    await runForFile(transformer, path)
+  for (const path of markdownFiles) {
+    if (contextTransformers && contextConfigs) {
+      await runForFile(contextTransformers, path, contextConfigs)
+    }
+    else {
+      await runForFile(singleTransformer!, path)
+    }
+  }
 
   console.log()
 
@@ -182,7 +261,12 @@ export async function verify(options: VerifyOptions = {}) {
     watcher.on('change', async (path) => {
       console.log(c.yellow('File changed'), relative(realCwd, path))
       errors.length = 0
-      await runForFile(transformer, path)
+      if (contextTransformers && contextConfigs) {
+        await runForFile(contextTransformers, path, contextConfigs)
+      }
+      else {
+        await runForFile(singleTransformer!, path)
+      }
       if (errors.length)
         printErrors()
       else
