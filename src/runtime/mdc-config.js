@@ -75,7 +75,7 @@ export default defineConfig({
       )
     },
     transformers: async (_code, _lang, _theme, options) => {
-      if (typeof options.meta !== 'string' || !options.meta.match(/\btwoslash\b/))
+      if (typeof options.meta !== 'string' || !/\btwoslash\b/.test(options.meta))
         return []
 
       // Use typeof window instead of import.meta.server (works in Node.js)
