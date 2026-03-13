@@ -2,6 +2,8 @@
 
 import process from 'node:process'
 import { defineConfig } from '@nuxtjs/mdc/config'
+import picomatch from 'picomatch'
+import { visit } from 'unist-util-visit'
 
 async function fallback() {
   const { removeTwoslashNotations } = await import('twoslash/fallback')
@@ -27,7 +29,6 @@ function resolveFileContext(filename, contextConfigs) {
   if (!filename)
     return undefined
 
-  const picomatch = require('picomatch')
   const relativePath = `../${filename}`
 
   for (const contextName of CONTEXT_PRIORITY) {
@@ -55,9 +56,6 @@ export default defineConfig({
       // It encodes [filename] (already parsed by MDC into properties.filename)
       // back into the meta string so the shiki transformer can access it.
       return processor.use(() => (/** @type {any} */ tree) => {
-        const { visit } = /** @type {typeof import('unist-util-visit')} */ (
-          require('unist-util-visit')
-        )
         visit(tree, 'element', (/** @type {any} */ node) => {
           if (node.tagName === 'pre' && node.properties?.filename) {
             const filename = node.properties.filename
