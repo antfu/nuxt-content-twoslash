@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "@nuxt/kit": "^4.4.2",
-    "@shikijs/vitepress-twoslash": "^3.23.0",
+    "@shikijs/vitepress-twoslash": "^4.0.2",
     "ansis": "^4.2.0",
     "cac": "^7.0.0",
     "chokidar": "^5.0.0",
@@ -52,7 +52,7 @@
     "pathe": "^2.0.3",
     "picomatch": "^4.0.3",
     "remark-parse": "^11.0.0",
-    "shiki": "^3.23.0",
+    "shiki": "^4.0.2",
     "twoslash": "^0.3.6",
     "typescript": "~5.9.3",
     "unified": "^11.0.5",
